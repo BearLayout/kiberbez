@@ -41,17 +41,52 @@
         .btn-outline:hover { background: rgba(0, 210, 255, 0.1); }
         .btn-danger { background: var(--danger); color: white; } .btn-danger:hover { background: #ff6b81; }
         
-        /* Hero Section */
-        .hero { padding: 180px 0 100px; display: flex; align-items: center; justify-content: space-between; gap: 50px; }
-        .hero-content { flex: 1; max-width: 600px; }
-        .hero-title { font-size: clamp(40px, 5vw, 64px); font-weight: 800; line-height: 1.1; margin-bottom: 24px; }
-        .hero-title span { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-subtitle { font-size: 18px; color: var(--text-muted); margin-bottom: 40px; }
+        /* === HERO SECTION (ГЛАВНЫЙ ЭКРАН) === */
+        .hero { 
+            padding: 180px 0 100px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            gap: 20px; 
+            min-height: 80vh;
+        }
+        .hero-content { 
+            flex: 1; 
+            max-width: 850px; /* Увеличили ширину блока с текстом */
+        }
+        .hero-title { 
+            font-size: clamp(36px, 4vw, 56px); /* Оптимальный размер для одной строки */
+            font-weight: 800; 
+            line-height: 1.1; 
+            margin-bottom: 24px; 
+            white-space: nowrap; /* ЖЕСТКО ЗАПРЕЩАЕТ ПЕРЕНОС СТРОКИ */
+        }
+        .hero-title span { 
+            background: var(--gradient-main); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        .hero-subtitle { 
+            font-size: 18px; 
+            color: var(--text-muted); 
+            margin-bottom: 40px; 
+            max-width: 600px;
+        }
         .hero-buttons { display: flex; gap: 20px; }
         
-        /* Картинка в Hero */
-        .hero-visual { flex: 1; display: flex; justify-content: center; align-items: center; }
-        .hero-image { max-width: 100%; height: auto; mix-blend-mode: multiply; }
+        /* Картинка */
+        .hero-visual { 
+            flex: 0 0 auto; 
+            display: flex; 
+            justify-content: flex-end; 
+            align-items: center;
+        }
+        .hero-image { 
+            width: 250px; /* Уменьшили размер картинки */
+            height: auto; 
+            mix-blend-mode: multiply; /* Убирает белый фон */
+            filter: contrast(1.1) drop-shadow(0 0 20px rgba(0, 210, 255, 0.2)); /* Убирает остатки белого и добавляет свечение */
+        }
 
         /* Секции */
         .section { padding: 80px 0; }
@@ -107,14 +142,18 @@
         .fade-in { opacity: 0; transform: translateY(30px); transition: 0.8s; } .fade-in.visible { opacity: 1; transform: translateY(0); }
         
         /* Адаптивность */
-        @media (max-width: 768px) {
-            .nav-links { display: none; } 
+        @media (max-width: 992px) {
+            .hero-title { white-space: normal; } /* Разрешаем перенос на мобильных */
             .hero { flex-direction: column; text-align: center; padding: 140px 0 60px; }
+            .hero-subtitle { margin: 0 auto 30px; }
             .hero-buttons { justify-content: center; }
+            .hero-visual { margin-top: 30px; justify-content: center; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
             .footer-content { flex-direction: column; gap: 20px; }
             .article-full { padding: 30px; margin-top: 100px; } 
             .article-full h1 { font-size: 28px; }
-            .hero-visual { margin-top: 30px; }
         }
     </style>
 </head>
@@ -136,9 +175,9 @@
     <!-- ГЛАВНАЯ -->
     <div id="main-page">
         <section class="hero container">
-            <!-- ИСПРАВЛЕНА ВЕРСТКА: div закрывается корректно -->
             <div class="hero-content fade-in visible">
-                <h1 class="hero-title">Все <span>о</span> кибербезопасности</h1>
+                <!-- Убрали теги <br> и лишние пробелы, текст теперь в одну строку -->
+                <h1 class="hero-title">Все о <span>кибербезопасности</span></h1>
                 <p class="hero-subtitle">Мы обеспечиваем технологический суверенитет и безопасность данных. Мониторинг 24/7.</p>
                 <div class="hero-buttons">
                     <button class="btn btn-primary" onclick="showBlog()">Читать блог</button>
@@ -146,7 +185,6 @@
                 </div>
             </div>
             
-            <!-- ИСПРАВЛЕНА КАРТИНКА: вынесена в отдельный блок -->
             <div class="hero-visual fade-in visible">
                 <img src="logo.png" alt="Kiberbez" class="hero-image">
             </div>
@@ -171,9 +209,7 @@
             <h2>Экспертный блог</h2>
             <p>Аналитика угроз, тренды и лучшие практики</p>
         </div>
-        <div class="blog-grid" id="blog-container">
-            <!-- Статьи рендерятся через JS -->
-        </div>
+        <div class="blog-grid" id="blog-container"></div>
     </div>
 
     <!-- СТАТЬЯ -->
@@ -188,7 +224,6 @@
 
     <!-- АДМИНКА -->
     <div id="admin-page" class="container admin-wrapper hidden">
-        <!-- Логин -->
         <div id="login-section" class="admin-panel" style="max-width: 400px;">
             <h2 style="text-align: center; margin-bottom: 30px;">Вход в панель управления</h2>
             <div class="form-group">
@@ -203,7 +238,6 @@
             <p id="login-error" style="color: var(--danger); text-align: center; margin-top: 10px; display: none;">Неверный email или пароль</p>
         </div>
 
-        <!-- Дашборд -->
         <div id="dashboard-section" class="admin-panel hidden">
             <div class="admin-header">
                 <h2>Управление статьями</h2>
@@ -215,7 +249,7 @@
                 <div class="form-group"><label>Заголовок</label><input type="text" id="art-title" class="form-control"></div>
                 <div class="form-group">
                     <label>Эмодзи или Ссылка на картинку (URL)</label>
-                    <input type="text" id="art-emoji" class="form-control" placeholder="🛡️ или https://site.com/image.jpg">
+                    <input type="text" id="art-emoji" class="form-control" placeholder="🛡️ или https://...">
                 </div>
                 <div class="form-group"><label>Текст статьи</label><textarea id="art-content" class="form-control"></textarea></div>
                 <button class="btn btn-primary" onclick="saveArticle(event)">Сохранить</button>
@@ -240,9 +274,8 @@
         </div>
     </footer>
 
-    <!-- JS ЛОГИКА (SUPABASE) -->
+    <!-- JS ЛОГИКА -->
     <script>
-        // ВАШИ КЛЮЧИ SUPABASE (оставлены как в вашем коде)
         const SUPABASE_URL = 'https://fzndxzyjkiucuqyezjgd.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_ELv-Qvq6Bm59oo9c9QO2WQ_nKp7xEbo';
         
@@ -250,9 +283,8 @@
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentUser = null;
-        let loadedArticles = []; // Храним загруженные статьи для удобного редактирования
+        let loadedArticles = [];
 
-        // === АВТОРИЗАЦИЯ ===
         async function checkUser() {
             const { data: { user } } = await supabaseClient.auth.getUser();
             currentUser = user;
@@ -290,7 +322,6 @@
             checkUser();
         }
 
-        // === НАВИГАЦИЯ ===
         function hideAllPages() {
             document.getElementById('main-page').classList.add('hidden');
             document.getElementById('blog-page').classList.add('hidden');
@@ -319,7 +350,6 @@
             checkUser();
         }
 
-        // === ЗАГРУЗКА БЛОГА ===
         async function loadBlog() {
             const container = document.getElementById('blog-container');
             container.innerHTML = '<p style="color: var(--text-muted);">Загрузка статей...</p>';
@@ -334,7 +364,7 @@
                 return;
             }
 
-            loadedArticles = articles; // Сохраняем в память
+            loadedArticles = articles;
 
             if (articles.length === 0) {
                 container.innerHTML = '<p style="color: var(--text-muted); text-align: center; grid-column: 1/-1;">Пока нет статей.</p>';
@@ -348,7 +378,6 @@
                 card.className = 'article-card';
                 card.onclick = () => readArticle(art);
                 
-                // Проверяем: если поле emoji начинается с http, значит это картинка
                 let coverContent = art.emoji || '📄';
                 if (coverContent.startsWith('http')) {
                     coverContent = `<img src="${coverContent}" alt="cover">`;
@@ -375,7 +404,6 @@
             window.scrollTo(0, 0);
         }
 
-        // === АДМИНКА (CRUD) ===
         async function loadAdminArticles() {
             const tbody = document.getElementById('admin-table-body');
             tbody.innerHTML = '';
@@ -391,7 +419,6 @@
             articles.forEach(art => {
                 const date = new Date(art.created_at).toLocaleDateString('ru-RU');
                 const tr = document.createElement('tr');
-                // Теперь передаем только ID, это защищает от ошибок с кавычками в заголовке
                 tr.innerHTML = `
                     <td>${art.title}</td>
                     <td>${date}</td>
@@ -440,10 +467,8 @@
         }
 
         function editArticle(id) {
-            // Ищем статью в локальном массиве по ID
             const art = loadedArticles.find(a => a.id === id);
             if (!art) return;
-
             document.getElementById('edit-id').value = art.id;
             document.getElementById('art-title').value = art.title;
             document.getElementById('art-emoji').value = art.emoji;
@@ -459,11 +484,7 @@
             else loadAdminArticles();
         }
 
-        // === ИНИЦИАЛИЗАЦИЯ ===
-        supabaseClient.auth.onAuthStateChange(() => {
-            checkUser();
-        });
-
+        supabaseClient.auth.onAuthStateChange(() => { checkUser(); });
         document.addEventListener("DOMContentLoaded", () => {
             checkUser();
             const observer = new IntersectionObserver((entries) => {
