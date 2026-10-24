@@ -10,7 +10,6 @@
     <!-- Подключение Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* (ТУТ ВАШ CSS БЕЗ ИЗМЕНЕНИЙ ИЗ ПРЕДЫДУЩЕГО ОТВЕТА) */
         :root {
             --bg-dark: #071021; --bg-card: rgba(20, 40, 80, 0.4); --primary-cyan: #00d2ff;
             --primary-blue: #0066cc; --text-main: #ffffff; --text-muted: #94a3b8;
@@ -25,30 +24,36 @@
         a { text-decoration: none; color: inherit; cursor: pointer; } ul { list-style: none; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
         .hidden { display: none !important; }
+        
+        /* Навигация */
         header { position: fixed; top: 0; width: 100%; padding: 20px 0; background: rgba(7, 16, 33, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 1000; }
         .nav-wrapper { display: flex; justify-content: space-between; align-items: center; }
         .logo-banner { background: #0b2b5c; color: white; font-weight: 800; font-size: 24px; letter-spacing: 2px; padding: 8px 30px; clip-path: polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0% 50%); border-bottom: 3px solid var(--primary-cyan); display: inline-block; text-transform: uppercase; cursor: pointer; }
         .nav-links { display: flex; gap: 30px; }
         .nav-links a { font-size: 15px; font-weight: 600; color: var(--text-muted); transition: 0.3s; }
         .nav-links a:hover, .nav-links a.active { color: var(--primary-cyan); }
+        
+        /* Кнопки */
         .btn { padding: 12px 28px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; border: none; font-size: 15px; font-family: inherit; }
         .btn-primary { background: var(--gradient-main); color: white; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5); }
         .btn-outline { background: transparent; border: 1px solid var(--primary-cyan); color: var(--primary-cyan); }
         .btn-outline:hover { background: rgba(0, 210, 255, 0.1); }
         .btn-danger { background: var(--danger); color: white; } .btn-danger:hover { background: #ff6b81; }
+        
+        /* Hero Section */
         .hero { padding: 180px 0 100px; display: flex; align-items: center; justify-content: space-between; gap: 50px; }
         .hero-content { flex: 1; max-width: 600px; }
         .hero-title { font-size: clamp(40px, 5vw, 64px); font-weight: 800; line-height: 1.1; margin-bottom: 24px; }
         .hero-title span { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero-subtitle { font-size: 18px; color: var(--text-muted); margin-bottom: 40px; }
         .hero-buttons { display: flex; gap: 20px; }
-        .hero-visual { flex: 1; display: flex; justify-content: center; }
-        .shield-container { width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,210,255,0.1) 0%, transparent 70%); border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: pulse 4s infinite alternate; }
-        .shield-icon { width: 200px; height: 240px; background: var(--bg-card); border: 2px solid var(--primary-cyan); border-radius: 20px 20px 100px 100px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); box-shadow: 0 0 40px rgba(0, 210, 255, 0.2); position: relative; }
-        .shield-icon::after { content: ''; width: 60px; height: 60px; border: 6px solid white; border-radius: 10px; position: relative; top: 10px; }
-        .shield-icon::before { content: ''; position: absolute; top: 65px; width: 40px; height: 40px; border: 6px solid white; border-bottom: none; border-radius: 20px 20px 0 0; }
-        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 100% { transform: scale(1.05); opacity: 1; } }
+        
+        /* Картинка в Hero */
+        .hero-visual { flex: 1; display: flex; justify-content: center; align-items: center; }
+        .hero-image { max-width: 100%; height: auto; mix-blend-mode: multiply; }
+
+        /* Секции */
         .section { padding: 80px 0; }
         .section-header { text-align: center; margin-bottom: 50px; }
         .section-header h2 { font-size: 36px; margin-bottom: 15px; }
@@ -58,19 +63,26 @@
         .card:hover { transform: translateY(-10px); border-color: var(--primary-cyan); box-shadow: 0 10px 30px rgba(0, 210, 255, 0.1); }
         .card-icon { width: 60px; height: 60px; border-radius: 12px; background: rgba(0, 210, 255, 0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 25px; font-size: 24px; }
         .card h3 { font-size: 22px; margin-bottom: 15px; } .card p { color: var(--text-muted); font-size: 15px; }
+        
+        /* Блог */
         .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; }
         .article-card { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 15px; overflow: hidden; cursor: pointer; transition: 0.3s; }
         .article-card:hover { transform: translateY(-5px); border-color: var(--primary-cyan); }
-        .article-img { width: 100%; height: 200px; background: #0b2b5c; display: flex; align-items: center; justify-content: center; font-size: 60px; }
+        .article-img-box { width: 100%; height: 200px; background: #0b2b5c; display: flex; align-items: center; justify-content: center; font-size: 60px; overflow: hidden; }
+        .article-img-box img { width: 100%; height: 100%; object-fit: cover; }
         .article-content { padding: 25px; }
         .article-date { font-size: 13px; color: var(--primary-cyan); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .article-title { font-size: 20px; margin-bottom: 15px; line-height: 1.4; }
         .article-excerpt { color: var(--text-muted); font-size: 15px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        /* Чтение статьи */
         .article-full { max-width: 800px; margin: 120px auto 60px; background: var(--bg-card); padding: 50px; border-radius: 20px; border: 1px solid var(--glass-border); }
         .article-full h1 { font-size: 42px; margin-bottom: 20px; line-height: 1.2; }
         .article-full .meta { color: var(--primary-cyan); margin-bottom: 40px; font-size: 14px; }
         .article-full .content { font-size: 18px; line-height: 1.8; white-space: pre-wrap; }
         .back-btn { margin-bottom: 30px; display: inline-block; color: var(--primary-cyan); font-weight: 600; }
+        
+        /* Админка */
         .admin-wrapper { margin-top: 120px; padding-bottom: 60px; min-height: 70vh; }
         .admin-panel { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px; max-width: 900px; margin: 0 auto; backdrop-filter: blur(12px); }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--glass-border); padding-bottom: 20px; }
@@ -83,16 +95,26 @@
         .admin-table th, .admin-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--glass-border); }
         .admin-table th { color: var(--text-muted); font-size: 14px; text-transform: uppercase; }
         .admin-actions { display: flex; gap: 10px; } .btn-sm { padding: 8px 15px; font-size: 13px; }
+        
+        /* Подвал */
         footer { padding: 60px 0 30px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
         .footer-content { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
         .footer-links { display: flex; gap: 30px; }
         .footer-links a { color: var(--text-muted); font-size: 14px; } .footer-links a:hover { color: var(--primary-cyan); }
         .copyright { text-align: center; color: var(--text-muted); font-size: 13px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; }
+        
+        /* Анимации */
         .fade-in { opacity: 0; transform: translateY(30px); transition: 0.8s; } .fade-in.visible { opacity: 1; transform: translateY(0); }
+        
+        /* Адаптивность */
         @media (max-width: 768px) {
-            .nav-links { display: none; } .hero { flex-direction: column; text-align: center; padding: 140px 0 60px; }
-            .hero-buttons { justify-content: center; } .footer-content { flex-direction: column; gap: 20px; }
-            .article-full { padding: 30px; margin-top: 100px; } .article-full h1 { font-size: 28px; }
+            .nav-links { display: none; } 
+            .hero { flex-direction: column; text-align: center; padding: 140px 0 60px; }
+            .hero-buttons { justify-content: center; }
+            .footer-content { flex-direction: column; gap: 20px; }
+            .article-full { padding: 30px; margin-top: 100px; } 
+            .article-full h1 { font-size: 28px; }
+            .hero-visual { margin-top: 30px; }
         }
     </style>
 </head>
@@ -114,6 +136,7 @@
     <!-- ГЛАВНАЯ -->
     <div id="main-page">
         <section class="hero container">
+            <!-- ИСПРАВЛЕНА ВЕРСТКА: div закрывается корректно -->
             <div class="hero-content fade-in visible">
                 <h1 class="hero-title">Все <span>о</span> кибербезопасности</h1>
                 <p class="hero-subtitle">Мы обеспечиваем технологический суверенитет и безопасность данных. Мониторинг 24/7.</p>
@@ -121,11 +144,14 @@
                     <button class="btn btn-primary" onclick="showBlog()">Читать блог</button>
                     <button class="btn btn-outline">Наши решения</button>
                 </div>
+            </div>
+            
+            <!-- ИСПРАВЛЕНА КАРТИНКА: вынесена в отдельный блок -->
             <div class="hero-visual fade-in visible">
-    <!-- Убрали рамки и добавили mix-blend-mode -->
-    <img src="logo.png" alt="Защита" style="max-width: 60%; height: auto; mix-blend-mode: multiply;">
-</div>
+                <img src="logo.png" alt="Kiberbez" class="hero-image">
+            </div>
         </section>
+
         <section class="section container">
             <div class="section-header">
                 <h2>Комплексная безопасность</h2>
@@ -183,14 +209,19 @@
                 <h2>Управление статьями</h2>
                 <button class="btn btn-outline" onclick="toggleEditor()">+ Написать статью</button>
             </div>
+            
             <div id="editor-section" class="hidden" style="margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid var(--glass-border);">
                 <input type="hidden" id="edit-id">
                 <div class="form-group"><label>Заголовок</label><input type="text" id="art-title" class="form-control"></div>
-                <div class="form-group"><label>Эмодзи (обложка)</label><input type="text" id="art-emoji" class="form-control" maxlength="2" placeholder="🛡️"></div>
+                <div class="form-group">
+                    <label>Эмодзи или Ссылка на картинку (URL)</label>
+                    <input type="text" id="art-emoji" class="form-control" placeholder="🛡️ или https://site.com/image.jpg">
+                </div>
                 <div class="form-group"><label>Текст статьи</label><textarea id="art-content" class="form-control"></textarea></div>
-                <button class="btn btn-primary" onclick="saveArticle()">Сохранить</button>
+                <button class="btn btn-primary" onclick="saveArticle(event)">Сохранить</button>
                 <button class="btn btn-outline" onclick="toggleEditor()">Отмена</button>
             </div>
+
             <table class="admin-table">
                 <thead><tr><th>Заголовок</th><th>Дата</th><th>Действия</th></tr></thead>
                 <tbody id="admin-table-body"></tbody>
@@ -211,7 +242,7 @@
 
     <!-- JS ЛОГИКА (SUPABASE) -->
     <script>
-        // === НАСТРОЙКИ SUPABASE (ЗАМЕНИТЕ НА СВОИ) ===
+        // ВАШИ КЛЮЧИ SUPABASE (оставлены как в вашем коде)
         const SUPABASE_URL = 'https://fzndxzyjkiucuqyezjgd.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_ELv-Qvq6Bm59oo9c9QO2WQ_nKp7xEbo';
         
@@ -219,6 +250,7 @@
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentUser = null;
+        let loadedArticles = []; // Храним загруженные статьи для удобного редактирования
 
         // === АВТОРИЗАЦИЯ ===
         async function checkUser() {
@@ -243,7 +275,7 @@
             const password = document.getElementById('login-pass').value;
             const errorMsg = document.getElementById('login-error');
 
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
             if (error) {
                 errorMsg.style.display = 'block';
@@ -287,7 +319,7 @@
             checkUser();
         }
 
-        // === ЗАГРУЗКА БЛОГА (БЕЗ АВТОРИЗАЦИИ) ===
+        // === ЗАГРУЗКА БЛОГА ===
         async function loadBlog() {
             const container = document.getElementById('blog-container');
             container.innerHTML = '<p style="color: var(--text-muted);">Загрузка статей...</p>';
@@ -302,6 +334,8 @@
                 return;
             }
 
+            loadedArticles = articles; // Сохраняем в память
+
             if (articles.length === 0) {
                 container.innerHTML = '<p style="color: var(--text-muted); text-align: center; grid-column: 1/-1;">Пока нет статей.</p>';
                 return;
@@ -313,8 +347,15 @@
                 const card = document.createElement('div');
                 card.className = 'article-card';
                 card.onclick = () => readArticle(art);
+                
+                // Проверяем: если поле emoji начинается с http, значит это картинка
+                let coverContent = art.emoji || '📄';
+                if (coverContent.startsWith('http')) {
+                    coverContent = `<img src="${coverContent}" alt="cover">`;
+                }
+
                 card.innerHTML = `
-                    <div class="article-img">${art.emoji || '📄'}</div>
+                    <div class="article-img-box">${coverContent}</div>
                     <div class="article-content">
                         <div class="article-date">${date}</div>
                         <h3 class="article-title">${art.title}</h3>
@@ -345,15 +386,17 @@
                 .order('created_at', { ascending: false });
 
             if (error || !articles) return;
+            loadedArticles = articles;
 
             articles.forEach(art => {
                 const date = new Date(art.created_at).toLocaleDateString('ru-RU');
                 const tr = document.createElement('tr');
+                // Теперь передаем только ID, это защищает от ошибок с кавычками в заголовке
                 tr.innerHTML = `
                     <td>${art.title}</td>
                     <td>${date}</td>
                     <td class="admin-actions">
-                        <button class="btn btn-outline btn-sm" onclick='editArticle(${JSON.stringify(art)})'>Ред.</button>
+                        <button class="btn btn-outline btn-sm" onclick="editArticle('${art.id}')">Ред.</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteArticle('${art.id}')">Удал.</button>
                     </td>
                 `;
@@ -372,7 +415,7 @@
             }
         }
 
-        async function saveArticle() {
+        async function saveArticle(event) {
             const id = document.getElementById('edit-id').value;
             const title = document.getElementById('art-title').value.trim();
             const emoji = document.getElementById('art-emoji').value.trim() || '📄';
@@ -384,11 +427,9 @@
             btn.innerText = 'Сохранение...'; btn.disabled = true;
 
             if(id) {
-                // Обновление
                 const { error } = await supabaseClient.from('articles').update({ title, emoji, content }).eq('id', id);
                 if(error) alert('Ошибка: ' + error.message);
             } else {
-                // Создание
                 const { error } = await supabaseClient.from('articles').insert([{ title, emoji, content }]);
                 if(error) alert('Ошибка: ' + error.message);
             }
@@ -398,7 +439,11 @@
             loadAdminArticles();
         }
 
-        function editArticle(art) {
+        function editArticle(id) {
+            // Ищем статью в локальном массиве по ID
+            const art = loadedArticles.find(a => a.id === id);
+            if (!art) return;
+
             document.getElementById('edit-id').value = art.id;
             document.getElementById('art-title').value = art.title;
             document.getElementById('art-emoji').value = art.emoji;
@@ -415,13 +460,12 @@
         }
 
         // === ИНИЦИАЛИЗАЦИЯ ===
-        supabaseClient.auth.onAuthStateChange((event, session) => {
+        supabaseClient.auth.onAuthStateChange(() => {
             checkUser();
         });
 
         document.addEventListener("DOMContentLoaded", () => {
             checkUser();
-            // Анимации появления
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); });
             });
