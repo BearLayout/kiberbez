@@ -22,11 +22,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- Leaflet.js для реальной карты -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
@@ -41,34 +38,13 @@
         
         html, body { overflow-x: hidden; width: 100%; }
         
-        /* ИСПРАВЛЕННЫЙ КУРСОР */
         .cursor-dot, .cursor-outline { 
-            position: fixed; top: 0; left: 0; 
-            transform: translate(-50%, -50%); 
-            border-radius: 50%; 
-            z-index: 9999; 
-            pointer-events: none; 
-            will-change: transform;
+            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; z-index: 9999; pointer-events: none; will-change: transform;
         }
-        .cursor-dot { 
-            width: 6px; height: 6px; 
-            background-color: var(--primary-cyan); 
-            box-shadow: 0 0 10px var(--primary-cyan); 
-        }
-        .cursor-outline { 
-            width: 30px; height: 30px; 
-            border: 2px solid rgba(0, 210, 255, 0.5); 
-            transition: width 0.2s ease-out, height 0.2s ease-out, background-color 0.2s ease-out, border-color 0.2s ease-out; 
-        }
-        .cursor-outline.hovering { 
-            width: 50px; height: 50px; 
-            background-color: rgba(0, 210, 255, 0.1); 
-            border-color: rgba(0, 210, 255, 1);
-        }
-        .cursor-outline.clicking {
-            width: 20px; height: 20px;
-            background-color: rgba(0, 210, 255, 0.3);
-        }
+        .cursor-dot { width: 6px; height: 6px; background-color: var(--primary-cyan); box-shadow: 0 0 10px var(--primary-cyan); }
+        .cursor-outline { width: 30px; height: 30px; border: 2px solid rgba(0, 210, 255, 0.5); transition: width 0.2s ease-out, height 0.2s ease-out, background-color 0.2s ease-out, border-color 0.2s ease-out; }
+        .cursor-outline.hovering { width: 50px; height: 50px; background-color: rgba(0, 210, 255, 0.1); border-color: rgba(0, 210, 255, 1); }
+        .cursor-outline.clicking { width: 20px; height: 20px; background-color: rgba(0, 210, 255, 0.3); }
         @media (max-width: 900px) { * { cursor: auto; } .cursor-dot, .cursor-outline { display: none; } }
 
         body {
@@ -276,6 +252,11 @@
             .article-full h1 { font-size: 36px; }
             .article-full .content { font-size: 18px; }
         }
+        
+        /* Стили для авторизации */
+        .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); }
+        .auth-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: var(--text-muted); transition: 0.3s; }
+        .auth-tab.active { color: var(--primary-cyan); border-bottom: 2px solid var(--primary-cyan); }
     </style>
 </head>
 <body>
@@ -319,7 +300,7 @@
                 <a onclick="showMap(); toggleMenu()" id="nav-map">🌍 Карта</a>
                 <a onclick="showGame(); toggleMenu()" id="nav-game">🎮 Игра</a>
                 <a onclick="showLeaderboard(); toggleMenu()" id="nav-leaderboard">🏆 Рекорды</a>
-                <a onclick="showAdmin(); toggleMenu()" id="nav-admin">⚙️</a>
+                <a onclick="showProfile(); toggleMenu()" id="nav-profile">👤 Вход</a>
             </nav>
             <a href="https://max.ru/join/HsJwwGgWoqjNWpDPAcaWhCScV-l5YodFQ1TDAE_u_6Y" target="_blank" class="btn btn-max header-max-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="margin-right: 6px;"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"/><path d="M12 6L7 14H17L12 6Z" fill="currentColor"/></svg>
@@ -477,17 +458,47 @@
         </div>
     </div>
 
-    <div id="admin-page" class="container hidden" style="margin-top: 80px; padding-bottom: 50px;">
-        <div id="login-section" class="quiz-container" style="max-width: 100%;">
-            <h2 style="margin-bottom: 20px; text-align: center;">Вход</h2>
-            <input type="email" id="login-email" class="form-control" placeholder="Email" style="margin-bottom: 10px;">
-            <input type="password" id="login-pass" class="form-control" placeholder="Пароль" style="margin-bottom: 20px;">
-            <button class="btn btn-primary" style="width: 100%;" onclick="login()">Войти</button>
+    <!-- СТРАНИЦА ПРОФИЛЯ / АВТОРИЗАЦИИ -->
+    <div id="profile-page" class="container hidden" style="margin-top: 80px; padding-bottom: 50px;">
+        
+        <!-- Форма входа/регистрации -->
+        <div id="auth-section" class="quiz-container" style="max-width: 400px;">
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Вход</div>
+                <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Регистрация</div>
+            </div>
+            
+            <!-- Вход -->
+            <div id="form-login">
+                <input type="email" id="login-email" class="form-control" placeholder="Email" style="margin-bottom: 10px;">
+                <input type="password" id="login-pass" class="form-control" placeholder="Пароль" style="margin-bottom: 20px;">
+                <button class="btn btn-primary" style="width: 100%;" onclick="login()">Войти</button>
+            </div>
+
+            <!-- Регистрация (скрыта по умолчанию) -->
+            <div id="form-register" class="hidden">
+                <input type="email" id="reg-email" class="form-control" placeholder="Email" style="margin-bottom: 10px;">
+                <input type="password" id="reg-pass" class="form-control" placeholder="Придумайте пароль" style="margin-bottom: 20px;">
+                <button class="btn btn-primary" style="width: 100%;" onclick="register()">Зарегистрироваться</button>
+            </div>
         </div>
-        <div id="dashboard-section" class="admin-panel hidden">
+
+        <!-- Личный кабинет обычного пользователя -->
+        <div id="user-dashboard" class="admin-panel hidden" style="max-width: 600px;">
+            <h2 style="margin-bottom: 15px;">Личный кабинет</h2>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Вы вошли как: <strong id="user-email-display" style="color: var(--primary-cyan);"></strong></p>
+            <p>Добро пожаловать в Kiberbez! Теперь вам доступны все инструменты, а ваши рекорды в игре сохраняются.</p>
+            <button class="btn btn-danger" style="width: 100%; margin-top: 20px;" onclick="logout()">Выйти из аккаунта</button>
+        </div>
+
+        <!-- Панель администратора -->
+        <div id="admin-dashboard" class="admin-panel hidden">
             <div class="admin-header" style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                <h2 style="font-size: 20px;">Управление статьями</h2>
-                <button class="btn btn-outline btn-sm" onclick="toggleEditor()">+ Написать</button>
+                <h2 style="font-size: 20px;">Управление статьями (Админ)</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-outline btn-sm" onclick="toggleEditor()">+ Написать</button>
+                    <button class="btn btn-danger btn-sm" onclick="logout()">Выйти</button>
+                </div>
             </div>
             <div id="editor-section" class="hidden" style="margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 20px;">
                 <input type="hidden" id="edit-id">
@@ -511,7 +522,7 @@
             <div style="margin-top: 15px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; font-size: 12px;">
                 <a href="mailto:info@kiberbez.ru" style="color: var(--text-muted);">info@kiberbez.ru</a>
                 <a href="https://max.ru/join/HsJwwGgWoqjNWpDPAcaWhCScV-l5YodFQ1TDAE_u_6Y" target="_blank" style="color: #6a11cb; font-weight: bold;">Канал в MAX</a>
-                <a onclick="showAdmin()" style="color: var(--text-muted);">Вход для админа</a>
+                <a onclick="showProfile()" style="color: var(--text-muted);">Вход / Регистрация</a>
             </div>
             <button class="hacker-btn" onclick="toggleHackerMode()" title="Секретный режим">&gt;_</button>
         </div>
@@ -523,6 +534,9 @@
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let loadedArticles = [];
+
+        // !!! ВАЖНО: Укажите здесь email вашего администратора !!!
+        const ADMIN_EMAIL = 'admin@kiberbez.ru'; 
 
         function escapeHTML(str) {
             if (!str) return '';
@@ -577,7 +591,7 @@
             } catch (err) { showToast('Ошибка отправки.', 'error'); } finally { btn.innerText = 'Отправить заявку'; btn.disabled = false; }
         });
 
-        const pages = ['main', 'blog', 'map', 'quiz', 'game', 'leaderboard', 'admin', 'leak', 'phishing', 'article', 'terminal', 'cve'];
+        const pages = ['main', 'blog', 'map', 'quiz', 'game', 'leaderboard', 'profile', 'leak', 'phishing', 'article', 'terminal', 'cve'];
         function hideAll() {
             pages.forEach(p => document.getElementById(`${p}-page`)?.classList.add('hidden'));
             document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
@@ -593,10 +607,104 @@
         function showMap() { hideAll(); document.getElementById('map-page').classList.remove('hidden'); document.getElementById('nav-map').classList.add('active'); initMap(); }
         function showGame() { hideAll(); document.getElementById('game-page').classList.remove('hidden'); document.getElementById('nav-game').classList.add('active'); if(window.redrawGame) window.redrawGame(); }
         function showLeaderboard() { hideAll(); document.getElementById('leaderboard-page').classList.remove('hidden'); document.getElementById('nav-leaderboard').classList.add('active'); loadLeaderboard(); }
-        function showAdmin() { hideAll(); document.getElementById('admin-page').classList.remove('hidden'); document.getElementById('nav-admin').classList.add('active'); checkUser(); }
         function showBlog() { hideAll(); document.getElementById('blog-page').classList.remove('hidden'); document.getElementById('nav-blog').classList.add('active'); loadBlog(); }
         function showCveFeed() { hideAll(); document.getElementById('cve-page').classList.remove('hidden'); document.getElementById('nav-cve').classList.add('active'); loadCveFeed(); }
+        
+        function showProfile() { 
+            hideAll(); 
+            document.getElementById('profile-page').classList.remove('hidden'); 
+            document.getElementById('nav-profile').classList.add('active'); 
+            checkUser(); 
+        }
 
+        // === ЛОГИКА АВТОРИЗАЦИИ И ПРОФИЛЯ ===
+        function switchAuthTab(tab) {
+            document.getElementById('tab-login').classList.remove('active');
+            document.getElementById('tab-register').classList.remove('active');
+            document.getElementById('form-login').classList.add('hidden');
+            document.getElementById('form-register').classList.add('hidden');
+            
+            if (tab === 'login') {
+                document.getElementById('tab-login').classList.add('active');
+                document.getElementById('form-login').classList.remove('hidden');
+            } else {
+                document.getElementById('tab-register').classList.add('active');
+                document.getElementById('form-register').classList.remove('hidden');
+            }
+        }
+
+        async function checkUser() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            
+            const authSection = document.getElementById('auth-section');
+            const userDashboard = document.getElementById('user-dashboard');
+            const adminDashboard = document.getElementById('admin-dashboard');
+            const navProfile = document.getElementById('nav-profile');
+
+            if (user) {
+                authSection.classList.add('hidden');
+                navProfile.innerText = '👤 Профиль';
+                
+                if (user.email === ADMIN_EMAIL) {
+                    // Это Админ
+                    userDashboard.classList.add('hidden');
+                    adminDashboard.classList.remove('hidden');
+                    loadAdminArticles();
+                } else {
+                    // Это обычный пользователь
+                    adminDashboard.classList.add('hidden');
+                    userDashboard.classList.remove('hidden');
+                    document.getElementById('user-email-display').innerText = user.email;
+                }
+            } else {
+                // Не авторизован
+                authSection.classList.remove('hidden');
+                userDashboard.classList.add('hidden');
+                adminDashboard.classList.add('hidden');
+                navProfile.innerText = '👤 Вход';
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-pass').value;
+            
+            if(!email || !password) return showToast('Заполните все поля', 'error');
+
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) {
+                showToast('Ошибка входа: ' + error.message, 'error');
+            } else {
+                showToast('Успешный вход!', 'success'); 
+                checkUser(); 
+            }
+        }
+
+        async function register() {
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-pass').value;
+            
+            if(!email || password.length < 6) return showToast('Пароль должен быть не менее 6 символов', 'error');
+
+            const { data, error } = await supabaseClient.auth.signUp({ email, password });
+            
+            if (error) {
+                showToast('Ошибка регистрации: ' + error.message, 'error');
+            } else {
+                showToast('Регистрация успешна! Проверьте почту или войдите.', 'success');
+                switchAuthTab('login');
+                document.getElementById('login-email').value = email;
+            }
+        }
+
+        async function logout() {
+            await supabaseClient.auth.signOut();
+            showToast('Вы вышли из аккаунта', 'success');
+            checkUser();
+            showMain();
+        }
+
+        // === ОСТАЛЬНОЙ ФУНКЦИОНАЛ ===
         const termInput = document.getElementById('term-input');
         const termOutput = document.getElementById('term-output');
         
@@ -644,7 +752,6 @@
             else document.body.classList.remove('global-alert');
         }, 8000);
 
-        // === ИСПРАВЛЕННЫЙ КУРСОР ===
         if (!isTouchDevice) {
             const cursorDot = document.getElementById('cursor-dot');
             const cursorOutline = document.getElementById('cursor-outline');
@@ -652,7 +759,6 @@
             
             window.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX; mouseY = e.clientY;
-                // Точка следует мгновенно (с учетом центрирования)
                 cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
                 
                 if (!document.getElementById('main-page').classList.contains('hidden')) {
@@ -666,7 +772,6 @@
             });
 
             function animateCursor() {
-                // Более отзывчивый шлейф (0.2 вместо 0.15)
                 outlineX += (mouseX - outlineX) * 0.2; 
                 outlineY += (mouseY - outlineY) * 0.2;
                 cursorOutline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0) translate(-50%, -50%)`;
@@ -674,7 +779,6 @@
             }
             animateCursor();
 
-            // Делегирование событий (работает быстрее)
             document.addEventListener('mouseover', (e) => {
                 if (e.target.closest('button, a, .quiz-option, .article-card, .card')) {
                     cursorOutline.classList.add('hovering');
@@ -683,7 +787,6 @@
                 }
             });
 
-            // Эффект клика
             document.addEventListener('mousedown', () => cursorOutline.classList.add('clicking'));
             document.addEventListener('mouseup', () => cursorOutline.classList.remove('clicking'));
         }
@@ -870,25 +973,6 @@
             window.scrollTo(0, 0);
         }
 
-        async function checkUser() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (user) {
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('dashboard-section').classList.remove('hidden');
-                loadAdminArticles();
-            } else {
-                document.getElementById('login-section').classList.remove('hidden');
-                document.getElementById('dashboard-section').classList.add('hidden');
-            }
-        }
-        async function login() {
-            const { error } = await supabaseClient.auth.signInWithPassword({ 
-                email: document.getElementById('login-email').value, 
-                password: document.getElementById('login-pass').value 
-            });
-            if (error) showToast('Ошибка входа: ' + error.message, 'error');
-            else { showToast('Успешный вход!', 'success'); checkUser(); }
-        }
         async function loadAdminArticles() {
             const tbody = document.getElementById('admin-table-body');
             const { data } = await supabaseClient.from('articles').select('*').order('created_at', { ascending: false });
