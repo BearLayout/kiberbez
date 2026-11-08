@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kiberbez | Центр Кибербезопасности</title>
     
-    <!-- SEO -->
     <meta name="description" content="Kiberbez - проверьте утечки данных, пройдите тест на фишинг, узнайте о новых CVE, сыграйте в игру и повысьте свой уровень кибербезопасности.">
     <link rel="icon" href="logo.png" type="image/png">
     <meta property="og:title" content="Kiberbez | Центр Кибербезопасности">
@@ -42,9 +41,34 @@
         
         html, body { overflow-x: hidden; width: 100%; }
         
-        .cursor-dot, .cursor-outline { position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; z-index: 9999; pointer-events: none; }
-        .cursor-dot { width: 8px; height: 8px; background-color: var(--primary-cyan); box-shadow: 0 0 10px var(--primary-cyan); }
-        .cursor-outline { width: 30px; height: 30px; border: 2px solid rgba(0, 210, 255, 0.5); transition: width 0.2s, height 0.2s, background-color 0.2s; }
+        /* ИСПРАВЛЕННЫЙ КУРСОР */
+        .cursor-dot, .cursor-outline { 
+            position: fixed; top: 0; left: 0; 
+            transform: translate(-50%, -50%); 
+            border-radius: 50%; 
+            z-index: 9999; 
+            pointer-events: none; 
+            will-change: transform;
+        }
+        .cursor-dot { 
+            width: 6px; height: 6px; 
+            background-color: var(--primary-cyan); 
+            box-shadow: 0 0 10px var(--primary-cyan); 
+        }
+        .cursor-outline { 
+            width: 30px; height: 30px; 
+            border: 2px solid rgba(0, 210, 255, 0.5); 
+            transition: width 0.2s ease-out, height 0.2s ease-out, background-color 0.2s ease-out, border-color 0.2s ease-out; 
+        }
+        .cursor-outline.hovering { 
+            width: 50px; height: 50px; 
+            background-color: rgba(0, 210, 255, 0.1); 
+            border-color: rgba(0, 210, 255, 1);
+        }
+        .cursor-outline.clicking {
+            width: 20px; height: 20px;
+            background-color: rgba(0, 210, 255, 0.3);
+        }
         @media (max-width: 900px) { * { cursor: auto; } .cursor-dot, .cursor-outline { display: none; } }
 
         body {
@@ -70,7 +94,6 @@
         .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
         .hidden { display: none !important; }
         
-        /* СТАТУС-БАР */
         .status-bar { position: fixed; top: 0; left: 0; width: 100%; height: 30px; background: #040a14; border-bottom: 1px solid rgba(0, 210, 255, 0.2); display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: 600; z-index: 1001; gap: 20px; text-transform: uppercase; letter-spacing: 1px; padding: 0 10px; }
         .status-item { display: flex; align-items: center; gap: 6px; color: var(--text-muted); white-space: nowrap; }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); animation: pulse-dot 2s infinite; }
@@ -81,7 +104,6 @@
         .defcon-3 { color: var(--warning); border: 1px solid var(--warning); }
         .defcon-1 { color: var(--danger); border: 1px solid var(--danger); animation: pulse-dot 1s infinite; }
 
-        /* ШАПКА */
         header { position: fixed; top: 30px; width: 100%; padding: 10px 0; background: rgba(7, 16, 33, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 1000; }
         .nav-wrapper { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
         .logo-banner { background: #0b2b5c; color: white; font-weight: 800; font-size: 18px; letter-spacing: 2px; padding: 6px 20px; clip-path: polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0% 50%); border-bottom: 3px solid var(--primary-cyan); display: inline-block; text-transform: uppercase; cursor: pointer; z-index: 1002; position: relative; }
@@ -93,7 +115,6 @@
         .nav-links a { font-size: 14px; font-weight: 600; color: var(--text-muted); transition: 0.3s; }
         .nav-links a:hover, .nav-links a.active { color: var(--primary-cyan); }
         
-        /* КНОПКИ */
         .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; border: none; font-size: 14px; font-family: inherit; display: inline-flex; align-items: center; justify-content: center; }
         .btn-primary { background: var(--gradient-main); color: white; }
         .btn-outline { background: transparent; border: 1px solid var(--primary-cyan); color: var(--primary-cyan); }
@@ -103,7 +124,6 @@
         .btn-max { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white; border: none; text-decoration: none; }
         .btn-max:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4); color: white; }
 
-        /* СЕКЦИИ */
         .section { padding: 40px 0; }
         .section-header { text-align: center; margin-bottom: 30px; }
         .section-header h2 { font-size: 28px; margin-bottom: 10px; }
@@ -111,7 +131,6 @@
         .form-control { width: 100%; padding: 12px 15px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; outline: none; font-family: inherit; }
         .form-control:focus { border-color: var(--primary-cyan); }
 
-        /* ГЛАВНАЯ */
         .hero { padding: 100px 0 40px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
         .hero-content { transition: transform 0.1s ease-out; flex: 1; }
         .hero-title { font-size: clamp(28px, 5vw, 48px); font-weight: 800; line-height: 1.2; margin-bottom: 20px; }
@@ -129,7 +148,6 @@
         .card-link { display: inline-block; margin-top: 20px; color: var(--primary-cyan); font-weight: 600; font-size: 14px; transition: 0.3s; }
         .card:hover .card-link { transform: translateX(5px); }
 
-        /* ТЕРМИНАЛ */
         .hacker-terminal { width: 100%; max-width: 800px; margin: 0 auto; background: #000; border: 1px solid var(--primary-cyan); border-radius: 10px; padding: 15px; font-family: 'JetBrains Mono', monospace; color: var(--success); box-shadow: 0 0 40px rgba(0, 210, 255, 0.15); height: 450px; display: flex; flex-direction: column; }
         .term-output { flex: 1; overflow-y: auto; font-size: 13px; line-height: 1.6; margin-bottom: 15px; word-break: break-all; white-space: pre-wrap; }
         .term-output::-webkit-scrollbar { width: 6px; }
@@ -138,7 +156,6 @@
         .term-input-line span { color: var(--primary-cyan); font-weight: bold; font-size: 13px; }
         .term-input-line input { flex: 1; width: 100%; background: transparent; border: none; color: var(--success); font-family: 'JetBrains Mono', monospace; font-size: 14px; outline: none; }
 
-        /* УТЕЧКИ */
         .leak-container { width: 100%; max-width: 600px; margin: 0 auto; background: #000; border: 1px solid var(--primary-cyan); border-radius: 10px; padding: 15px; font-family: 'JetBrains Mono', monospace; color: var(--success); }
         .terminal-header { display: flex; gap: 8px; margin-bottom: 20px; }
         .term-dot { width: 12px; height: 12px; border-radius: 50%; }
@@ -148,14 +165,12 @@
         .terminal-input input { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--success); color: var(--success); font-family: inherit; outline: none; padding: 5px 0; }
         .terminal-input button { background: var(--success); color: #000; border: none; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; }
 
-        /* КАРТА (LEAFLET) */
         .map-container { position: relative; width: 100%; height: 400px; border-radius: 15px; border: 1px solid var(--glass-border); overflow: hidden; z-index: 1; }
         #threatMap { width: 100%; height: 100%; background: #071021; }
         .attack-line { filter: drop-shadow(0 0 4px currentColor); }
         .pulse-marker { animation: pulse-animation 1.5s infinite; }
         @keyframes pulse-animation { 0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); } }
 
-        /* ОСТАЛЬНОЕ (Фишинг, Тест) */
         .phishing-card, .quiz-container, .article-full, .admin-panel { width: 100%; max-width: 700px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 15px; overflow: hidden; }
         .email-header { background: rgba(0,0,0,0.3); padding: 15px; border-bottom: 1px solid var(--glass-border); font-size: 13px; word-break: break-all; }
         .email-body { padding: 20px; font-size: 15px; line-height: 1.8; }
@@ -165,7 +180,6 @@
         .quiz-container { padding: 20px; }
         .quiz-option { padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 8px; cursor: pointer; transition: 0.2s; margin-bottom: 10px; font-size: 14px; }
         
-        /* БЛОГ - МОБИЛЬНАЯ ВЕРСИЯ (ПО УМОЛЧАНИЮ) */
         .blog-controls { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
         .search-box { width: 100%; position: relative; }
         .search-box input { width: 100%; padding: 12px 15px 12px 40px; border-radius: 30px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; outline: none; }
@@ -184,7 +198,6 @@
         .article-full .meta { font-size: 12px; color: var(--primary-cyan); margin-bottom: 20px; }
         .article-full .content { font-size: 16px; line-height: 1.7; white-space: pre-wrap; }
 
-        /* ИГРА */
         #game-page { padding: 80px 0 30px; }
         .game-wrapper { position: relative; width: 100%; max-width: 800px; margin: 0 auto; }
         canvas#gameCanvas { display: block; width: 100%; height: auto; border-radius: 16px; border: 1px solid var(--glass-border); background: rgba(7, 16, 33, 0.8); touch-action: none; }
@@ -192,7 +205,6 @@
         .leaderboard-table { width: 100%; max-width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 15px; overflow: hidden; font-size: 14px; }
         .leaderboard-table th, .leaderboard-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--glass-border); }
 
-        /* CVE */
         .cve-card { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; margin-bottom: 10px; border-left: 5px solid var(--text-muted); }
         .cve-critical { border-left-color: var(--danger); background: rgba(255, 71, 87, 0.05); }
         .cve-high { border-left-color: #ff9f43; background: rgba(255, 159, 67, 0.05); }
@@ -211,7 +223,6 @@
         .cve-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); flex-wrap: wrap; gap: 10px; }
         .cve-link { color: var(--primary-cyan); font-weight: 600; }
 
-        /* МОДАЛКИ И ТОСТЫ */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
         .modal-content { background: var(--bg-dark); border: 1px solid var(--primary-cyan); border-radius: 15px; padding: 20px; width: 90%; max-width: 400px; position: relative; transform: translateY(20px); transition: 0.3s; }
@@ -228,14 +239,12 @@
         footer { padding: 30px 0 20px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 30px; text-align: center; color: var(--text-muted); font-size: 12px; }
         .hacker-btn { background: none; border: none; color: #333; font-family: monospace; font-size: 16px; cursor: pointer; margin-top: 10px; }
         
-        /* АДМИНКА */
         .admin-panel { padding: 15px; }
         .admin-header { flex-direction: column; gap: 10px; align-items: flex-start !important; }
         .admin-table { display: block; overflow-x: auto; white-space: nowrap; }
         .form-group { margin-bottom: 12px; }
         textarea.form-control { min-height: 120px; }
 
-        /* МОБИЛЬНАЯ АДАПТАЦИЯ */
         @media (max-width: 900px) {
             .burger { display: flex; }
             .nav-links { position: fixed; top: 60px; left: -100%; width: 100%; height: calc(100vh - 60px); background: rgba(7, 16, 33, 0.98); flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 30px; gap: 20px; transition: 0.3s; z-index: 999; border-top: 1px solid var(--glass-border); overflow-y: auto; }
@@ -255,7 +264,6 @@
             .map-container { height: 300px; }
         }
 
-        /* ДЕСКТОПНАЯ ВЕРСИЯ БЛОГА (ФИКС) */
         @media (min-width: 901px) {
             .blog-controls { flex-direction: row; justify-content: space-between; align-items: center; }
             .search-box { max-width: 400px; }
@@ -510,28 +518,19 @@
     </footer>
 
     <script>
-        // === SUPABASE ===
         const SUPABASE_URL = 'https://fzndxzyjkiucuqyezjgd.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_ELv-Qvq6Bm59oo9c9QO2WQ_nKp7xEbo';
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let loadedArticles = [];
 
-        // === ЗАЩИТА ОТ XSS ===
         function escapeHTML(str) {
             if (!str) return '';
             return String(str).replace(/[&<>'"]/g, 
-                tag => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    "'": '&#39;',
-                    '"': '&quot;'
-                }[tag] || tag)
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
             );
         }
 
-        // === WEB AUDIO ===
         let audioCtx;
         function initAudio() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -557,7 +556,6 @@
             });
         }
 
-        // === TOASTS ===
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -567,7 +565,6 @@
             setTimeout(() => { toast.style.animation = 'slideOut 0.3s forwards'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        // === МОДАЛЬНОЕ ОКНО ===
         function openLeadModal() { document.getElementById('leadModal').classList.add('active'); }
         function closeLeadModal() { document.getElementById('leadModal').classList.remove('active'); }
         document.getElementById('leadForm').addEventListener('submit', async (e) => {
@@ -580,7 +577,6 @@
             } catch (err) { showToast('Ошибка отправки.', 'error'); } finally { btn.innerText = 'Отправить заявку'; btn.disabled = false; }
         });
 
-        // === НАВИГАЦИЯ ===
         const pages = ['main', 'blog', 'map', 'quiz', 'game', 'leaderboard', 'admin', 'leak', 'phishing', 'article', 'terminal', 'cve'];
         function hideAll() {
             pages.forEach(p => document.getElementById(`${p}-page`)?.classList.add('hidden'));
@@ -601,7 +597,6 @@
         function showBlog() { hideAll(); document.getElementById('blog-page').classList.remove('hidden'); document.getElementById('nav-blog').classList.add('active'); loadBlog(); }
         function showCveFeed() { hideAll(); document.getElementById('cve-page').classList.remove('hidden'); document.getElementById('nav-cve').classList.add('active'); loadCveFeed(); }
 
-        // === ТЕРМИНАЛ ===
         const termInput = document.getElementById('term-input');
         const termOutput = document.getElementById('term-output');
         
@@ -635,7 +630,6 @@
             }
         });
 
-        // === DEFCON ===
         setInterval(() => {
             const defconEl = document.getElementById('defcon-level');
             if(!defconEl) return;
@@ -650,7 +644,7 @@
             else document.body.classList.remove('global-alert');
         }, 8000);
 
-        // === КУРСОР ===
+        // === ИСПРАВЛЕННЫЙ КУРСОР ===
         if (!isTouchDevice) {
             const cursorDot = document.getElementById('cursor-dot');
             const cursorOutline = document.getElementById('cursor-outline');
@@ -658,7 +652,9 @@
             
             window.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX; mouseY = e.clientY;
-                cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+                // Точка следует мгновенно (с учетом центрирования)
+                cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+                
                 if (!document.getElementById('main-page').classList.contains('hidden')) {
                     const text = document.getElementById('parallax-text');
                     const img = document.getElementById('parallax-image');
@@ -668,22 +664,30 @@
                     }
                 }
             });
+
             function animateCursor() {
-                outlineX += (mouseX - outlineX) * 0.15; outlineY += (mouseY - outlineY) * 0.15;
-                cursorOutline.style.transform = `translate(${outlineX}px, ${outlineY}px)`;
+                // Более отзывчивый шлейф (0.2 вместо 0.15)
+                outlineX += (mouseX - outlineX) * 0.2; 
+                outlineY += (mouseY - outlineY) * 0.2;
+                cursorOutline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0) translate(-50%, -50%)`;
                 requestAnimationFrame(animateCursor);
             }
             animateCursor();
+
+            // Делегирование событий (работает быстрее)
             document.addEventListener('mouseover', (e) => {
-                if(e.target.closest('button, a, .quiz-option, .article-card, .card')) {
-                    cursorOutline.style.width = '50px'; cursorOutline.style.height = '50px'; cursorOutline.style.backgroundColor = 'rgba(0,210,255,0.1)';
+                if (e.target.closest('button, a, .quiz-option, .article-card, .card')) {
+                    cursorOutline.classList.add('hovering');
                 } else {
-                    cursorOutline.style.width = '30px'; cursorOutline.style.height = '30px'; cursorOutline.style.backgroundColor = 'transparent';
+                    cursorOutline.classList.remove('hovering');
                 }
             });
+
+            // Эффект клика
+            document.addEventListener('mousedown', () => cursorOutline.classList.add('clicking'));
+            document.addEventListener('mouseup', () => cursorOutline.classList.remove('clicking'));
         }
 
-        // === УТЕЧКИ ===
         function startLeakScan() {
             const email = document.getElementById('leak-email').value;
             const out = document.getElementById('terminal-output');
@@ -701,7 +705,6 @@
             }, 1500);
         }
 
-        // === ФИШИНГ ===
         const phishingData = [
             { sender: "support@paypal-secure-update.com", subject: "Срочно! Аккаунт заблокирован", body: "Подтвердите данные по ссылке.", isPhishing: true, reason: "Поддельный домен." },
             { sender: "hr@yourcompany.ru", subject: "Расписание встреч", body: "Привет! Во вложении расписание.", isPhishing: false, reason: "Обычное письмо." },
@@ -734,7 +737,6 @@
             document.querySelector('.phishing-actions').style.display = 'none';
         }
 
-        // === ТЕСТ ===
         const quizData = [
             { q: "Используете 2FA?", opts: ["Везде", "Иногда", "Нет"], sc: [20, 10, 0] },
             { q: "Где храните пароли?", opts: ["Менеджер", "Блокнот", "Одинаковые"], sc: [20, 10, 0] },
@@ -752,7 +754,6 @@
             c.innerHTML = `<div style="margin-bottom: 15px; font-size: 15px;">${escapeHTML(q.q)}</div>${q.opts.map((o,i) => `<div class="quiz-option" onclick="qScore+=${q.sc[i]}; currQ++; renderQuiz()">${escapeHTML(o)}</div>`).join('')}`;
         }
 
-        // === КАРТА УГРОЗ (Leaflet + Esri Dark Gray) ===
         let threatMap = null;
         let mapLayer = null;
 
@@ -763,7 +764,7 @@
             if (!threatMap) {
                 threatMap = L.map('threatMap', {
                     zoomControl: false,
-                    attributionControl: false // Отключаем надпись в углу
+                    attributionControl: false
                 }).setView([20, 0], 2);
 
                 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
@@ -809,7 +810,6 @@
             setTimeout(() => { threatMap.invalidateSize(); }, 200);
         }
 
-        // === HACKER MODE ===
         let matrixInt;
         function toggleHackerMode() {
             document.body.classList.toggle('hacker-mode');
@@ -824,7 +824,6 @@
             } else { clearInterval(matrixInt); ctx.clearRect(0,0,canvas.width,canvas.height); }
         }
 
-        // === БЛОГ ===
         async function loadBlog() {
             const container = document.getElementById('blog-container');
             container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Загрузка...</p>';
@@ -871,7 +870,6 @@
             window.scrollTo(0, 0);
         }
 
-        // === АДМИНКА ===
         async function checkUser() {
             const { data: { user } } = await supabaseClient.auth.getUser();
             if (user) {
@@ -944,7 +942,6 @@
             showToast('Удалено', 'success');
         }
 
-        // === CVE ЛЕНТА ===
         const CVE_CACHE_KEY = 'kiberbez_cve_cache';
         const CVE_CACHE_TTL = 1000 * 60 * 60;
         async function loadCveFeed(forceReload = false) {
@@ -1001,7 +998,6 @@
             }).join('');
         }
 
-        // === ИГРА И РЕКОРДЫ ===
         async function loadLeaderboard() {
             const tbody = document.getElementById('leaderboard-body');
             tbody.innerHTML = '<tr><td colspan="3">Загрузка...</td></tr>';
@@ -1079,7 +1075,6 @@
             window.redrawGame = () => { if(state==='idle') requestAnimationFrame(loop); };
         })();
 
-        // === СТАТУС-БАР ===
         setInterval(() => { const el = document.getElementById('blocked-count'); if(el) el.innerText = (parseInt(el.innerText.replace(/,/g,'')) + Math.floor(Math.random()*5)).toLocaleString(); }, 3000);
     </script>
 </body>
