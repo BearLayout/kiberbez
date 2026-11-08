@@ -23,7 +23,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- Leaflet.js -->
+    <!-- Leaflet.js для реальной карты -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
@@ -149,31 +149,13 @@
         .terminal-input button { background: var(--success); color: #000; border: none; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; }
 
         /* КАРТА (LEAFLET) */
-        .map-container { 
-            position: relative; 
-            width: 100%; 
-            height: 400px; 
-            border-radius: 15px; 
-            border: 1px solid var(--glass-border); 
-            overflow: hidden; 
-            z-index: 1;
-        }
-        #threatMap { 
-            width: 100%; 
-            height: 100%; 
-            background: #071021; 
-        }
-        /* Убираем стили для .leaflet-control-attribution, так как саму надпись мы отключили */
-        
+        .map-container { position: relative; width: 100%; height: 400px; border-radius: 15px; border: 1px solid var(--glass-border); overflow: hidden; z-index: 1; }
+        #threatMap { width: 100%; height: 100%; background: #071021; }
         .attack-line { filter: drop-shadow(0 0 4px currentColor); }
         .pulse-marker { animation: pulse-animation 1.5s infinite; }
-        @keyframes pulse-animation {
-            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
-        }
+        @keyframes pulse-animation { 0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); } }
 
-        /* ОСТАЛЬНОЕ */
+        /* ОСТАЛЬНОЕ (Фишинг, Тест) */
         .phishing-card, .quiz-container, .article-full, .admin-panel { width: 100%; max-width: 700px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 15px; overflow: hidden; }
         .email-header { background: rgba(0,0,0,0.3); padding: 15px; border-bottom: 1px solid var(--glass-border); font-size: 13px; word-break: break-all; }
         .email-body { padding: 20px; font-size: 15px; line-height: 1.8; }
@@ -183,23 +165,24 @@
         .quiz-container { padding: 20px; }
         .quiz-option { padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 8px; cursor: pointer; transition: 0.2s; margin-bottom: 10px; font-size: 14px; }
         
+        /* БЛОГ - МОБИЛЬНАЯ ВЕРСИЯ (ПО УМОЛЧАНИЮ) */
         .blog-controls { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
         .search-box { width: 100%; position: relative; }
         .search-box input { width: 100%; padding: 12px 15px 12px 40px; border-radius: 30px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; outline: none; }
         .search-box::before { content: '🔍'; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); opacity: 0.7; }
         .blog-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
         .article-card { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 15px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; }
-        .article-img-box { width: 100%; height: 150px; background: #0b2b5c; display: flex; align-items: center; justify-content: center; font-size: 50px; overflow: hidden; }
+        .article-img-box { width: 100%; height: 180px; background: #0b2b5c; display: flex; align-items: center; justify-content: center; font-size: 50px; overflow: hidden; }
         .article-img-box img { width: 100%; height: 100%; object-fit: cover; }
         .article-content { padding: 15px; flex: 1; display: flex; flex-direction: column; }
         .article-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--primary-cyan); margin-bottom: 10px; text-transform: uppercase; }
-        .article-title { font-size: 16px; margin-bottom: 10px; line-height: 1.4; }
-        .article-excerpt { color: var(--text-muted); font-size: 13px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+        .article-title { font-size: 18px; margin-bottom: 10px; line-height: 1.4; }
+        .article-excerpt { color: var(--text-muted); font-size: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
         
         .article-full { padding: 20px; margin-top: 90px; }
         .article-full h1 { font-size: 24px; margin-bottom: 15px; line-height: 1.2; }
         .article-full .meta { font-size: 12px; color: var(--primary-cyan); margin-bottom: 20px; }
-        .article-full .content { font-size: 15px; line-height: 1.7; white-space: pre-wrap; }
+        .article-full .content { font-size: 16px; line-height: 1.7; white-space: pre-wrap; }
 
         /* ИГРА */
         #game-page { padding: 80px 0 30px; }
@@ -270,6 +253,20 @@
             .status-item:nth-child(2), .status-item:nth-child(3) { display: none; }
             .logo-banner { font-size: 16px; padding: 6px 15px; }
             .map-container { height: 300px; }
+        }
+
+        /* ДЕСКТОПНАЯ ВЕРСИЯ БЛОГА (ФИКС) */
+        @media (min-width: 901px) {
+            .blog-controls { flex-direction: row; justify-content: space-between; align-items: center; }
+            .search-box { max-width: 400px; }
+            .blog-audit-btn { width: auto !important; }
+            .blog-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+            .article-img-box { height: 200px; }
+            .article-title { font-size: 20px; }
+            .article-excerpt { font-size: 15px; }
+            .article-full { max-width: 800px; padding: 40px; margin-top: 120px; }
+            .article-full h1 { font-size: 36px; }
+            .article-full .content { font-size: 18px; }
         }
     </style>
 </head>
@@ -426,7 +423,7 @@
             <div class="search-box">
                 <input type="text" id="blog-search" placeholder="Поиск по статьям..." oninput="filterBlog()">
             </div>
-            <button class="btn btn-primary" onclick="openLeadModal()" style="width: 100%;">Получить аудит</button>
+            <button class="btn btn-primary blog-audit-btn" onclick="openLeadModal()">Получить аудит</button>
         </div>
         <div class="blog-grid" id="blog-container"></div>
     </div>
@@ -763,30 +760,25 @@
             const mapContainer = document.getElementById('threatMap');
             if (!mapContainer) return;
 
-            // Инициализация карты (если ещё нет)
             if (!threatMap) {
                 threatMap = L.map('threatMap', {
                     zoomControl: false,
                     attributionControl: false // Отключаем надпись в углу
-                }).setView([20, 0], 2); // Центр мира
+                }).setView([20, 0], 2);
 
-                // Тёмный слой карты от Esri (не требует API-ключа)
                 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
                     maxZoom: 16
                 }).addTo(threatMap);
 
-                // Слой для анимации атак
                 mapLayer = L.layerGroup().addTo(threatMap);
             }
 
-            // Очищаем старые атаки перед запуском
             mapLayer.clearLayers();
 
-            // Генератор случайных атак
             function launchAttack() {
                 const latlngs = [
-                    [Math.random() * 80 - 40, Math.random() * 360 - 180], // Источник
-                    [Math.random() * 80 - 40, Math.random() * 360 - 180]  // Цель
+                    [Math.random() * 80 - 40, Math.random() * 360 - 180],
+                    [Math.random() * 80 - 40, Math.random() * 360 - 180]
                 ];
 
                 const polyline = L.polyline(latlngs, {
@@ -835,9 +827,9 @@
         // === БЛОГ ===
         async function loadBlog() {
             const container = document.getElementById('blog-container');
-            container.innerHTML = '<p style="color: var(--text-muted);">Загрузка...</p>';
+            container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Загрузка...</p>';
             const { data, error } = await supabaseClient.from('articles').select('*').order('created_at', { ascending: false });
-            if (error) { container.innerHTML = '<p style="color: var(--danger);">Ошибка загрузки статей.</p>'; return; }
+            if (error) { container.innerHTML = '<p style="color: var(--danger); text-align: center;">Ошибка загрузки статей.</p>'; return; }
             loadedArticles = data || [];
             filterBlog();
         }
@@ -847,7 +839,7 @@
             const filtered = loadedArticles.filter(a => 
                 a.title.toLowerCase().includes(query) || a.content.toLowerCase().includes(query) || (a.tags && a.tags.toLowerCase().includes(query))
             );
-            if (filtered.length === 0) { container.innerHTML = '<p style="color: var(--text-muted);">Ничего не найдено.</p>'; return; }
+            if (filtered.length === 0) { container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Ничего не найдено.</p>'; return; }
             container.innerHTML = filtered.map(art => {
                 const date = new Date(art.created_at).toLocaleDateString('ru-RU');
                 const readTime = Math.ceil(art.content.split(' ').length / 180) || 1;
