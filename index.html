@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kiberbez | Центр Кибербезопасности</title>
+    
+    <!-- SEO -->
+    <meta name="description" content="Kiberbez - проверьте утечки данных, пройдите тест на фишинг, узнайте о новых CVE, сыграйте в игру и повысьте свой уровень кибербезопасности.">
+    <link rel="icon" href="logo.png" type="image/png">
+    <meta property="og:title" content="Kiberbez | Центр Кибербезопасности">
+    <meta property="og:description" content="Проверьте свои данные на утечки, узнайте о новых уязвимостях и пройдите тест на фишинг.">
+    <meta property="og:image" content="logo.png">
+    <meta property="og:type" content="website">
+
+    <!-- PWA (Раскомментируйте, когда создадите manifest.json) -->
+    <!-- <link rel="manifest" href="manifest.json"> -->
+    <meta name="theme-color" content="#071021">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Kiberbez">
+    <link rel="apple-touch-icon" href="logo.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Yandex.Metrika counter (РАСКОММЕНТИРУЙТЕ И ВСТАВЬТЕ ВАШ ID) -->
+    <!--
+    <script type="text/javascript" >
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+       ym(XXXXXXXX, "init", { defer: true, clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true });
+    </script>
+    -->
+
+    <style>
+        /* === БАЗОВЫЕ СТИЛИ === */
+        :root {
+            --bg-dark: #071021; --bg-card: rgba(20, 40, 80, 0.4); --primary-cyan: #00d2ff;
+            --primary-blue: #0066cc; --text-main: #ffffff; --text-muted: #94a3b8;
+            --glass-border: rgba(0, 210, 255, 0.15); --gradient-main: linear-gradient(135deg, var(--primary-cyan), var(--primary-blue));
+            --danger: #ff4757; --success: #2ecc71; --warning: #f1c40f; --gold: #ffd700;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; -webkit-tap-highlight-color: transparent; cursor: none; }
+        
+        .cursor-dot, .cursor-outline { position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; z-index: 9999; pointer-events: none; }
+        .cursor-dot { width: 8px; height: 8px; background-color: var(--primary-cyan); box-shadow: 0 0 10px var(--primary-cyan); }
+        .cursor-outline { width: 30px; height: 30px; border: 2px solid rgba(0, 210, 255, 0.5); transition: width 0.2s, height 0.2s, background-color 0.2s; }
+        @media (max-width: 900px) { * { cursor: auto; } .cursor-dot, .cursor-outline { display: none; } }
+
+        body {
+            background-color: var(--bg-dark); color: var(--text-main); overflow-x: hidden; line-height: 1.6;
+            background-image: radial-gradient(circle at 15% 50%, rgba(0, 210, 255, 0.05) 0%, transparent 40%), radial-gradient(circle at 85% 30%, rgba(0, 102, 204, 0.05) 0%, transparent 40%);
+            padding-top: 30px; transition: all 0.3s;
+        }
+        
+        @keyframes alert-pulse { 0% { box-shadow: inset 0 0 0 rgba(255,71,87,0); } 50% { box-shadow: inset 0 0 100px rgba(255,71,87,0.2); } 100% { box-shadow: inset 0 0 0 rgba(255,71,87,0); } }
+        body.global-alert { animation: alert-pulse 3s infinite; }
+
+        body.hacker-mode { background-color: #000; color: #0f0; font-family: 'JetBrains Mono', monospace; }
+        body.hacker-mode .cursor-dot { background-color: #0f0; box-shadow: 0 0 10px #0f0; }
+        body.hacker-mode .cursor-outline { border-color: #0f0; }
+        #matrix-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0; transition: opacity 0.5s; pointer-events: none; }
+        body.hacker-mode #matrix-canvas { opacity: 1; }
+        body.hacker-mode .bg-card, body.hacker-mode .quiz-container, body.hacker-mode header, body.hacker-mode .status-bar { background: rgba(0, 20, 0, 0.8) !important; border-color: #0f0 !important; }
+        body.hacker-mode .logo-banner { background: #0f0 !important; color: #000 !important; border-color: #0f0 !important; }
+        body.hacker-mode .btn-primary { background: #0f0 !important; color: #000 !important; }
+        body.hacker-mode .btn-outline { border-color: #0f0 !important; color: #0f0 !important; }
+
+        a { text-decoration: none; color: inherit; cursor: pointer; } ul { list-style: none; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .hidden { display: none !important; }
+        
+        .status-bar { position: fixed; top: 0; left: 0; width: 100%; height: 30px; background: #040a14; border-bottom: 1px solid rgba(0, 210, 255, 0.2); display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: 600; z-index: 1001; gap: 20px; text-transform: uppercase; letter-spacing: 1px; flex-wrap: wrap; padding: 0 10px; }
+        .status-item { display: flex; align-items: center; gap: 6px; color: var(--text-muted); }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); animation: pulse-dot 2s infinite; }
+        @keyframes pulse-dot { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        
+        .defcon-badge { padding: 2px 8px; border-radius: 4px; font-weight: bold; background: rgba(0,0,0,0.5); }
+        .defcon-5 { color: var(--success); border: 1px solid var(--success); }
+        .defcon-3 { color: var(--warning); border: 1px solid var(--warning); }
+        .defcon-1 { color: var(--danger); border: 1px solid var(--danger); animation: pulse-dot 1s infinite; }
+
+        header { position: fixed; top: 30px; width: 100%; padding: 15px 0; background: rgba(7, 16, 33, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 1000; }
+        .nav-wrapper { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+        .logo-banner { background: #0b2b5c; color: white; font-weight: 800; font-size: 20px; letter-spacing: 2px; padding: 6px 25px; clip-path: polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0% 50%); border-bottom: 3px solid var(--primary-cyan); display: inline-block; text-transform: uppercase; cursor: pointer; z-index: 1002; position: relative; }
+        
+        .burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; z-index: 1002; }
+        .burger span { width: 25px; height: 3px; background: var(--primary-cyan); transition: 0.3s; border-radius: 3px; }
+
+        .nav-links { display: flex; gap: 15px; flex-wrap: wrap; }
+        .nav-links a { font-size: 14px; font-weight: 600; color: var(--text-muted); transition: 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--primary-cyan); }
+        
+        .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; border: none; font-size: 14px; font-family: inherit; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-primary { background: var(--gradient-main); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--primary-cyan); color: var(--primary-cyan); }
+        .btn-outline:hover { background: rgba(0, 210, 255, 0.1); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn-max { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white; border: none; text-decoration: none; }
+        .btn-max:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4); color: white; }
+
+        .section { padding: 60px 0; }
+        .section-header { text-align: center; margin-bottom: 40px; }
+        .section-header h2 { font-size: 32px; margin-bottom: 10px; }
+        .section-header p { color: var(--text-muted); font-size: 16px; }
+        .form-control { width: 100%; padding: 12px 15px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; outline: none; font-family: inherit; }
+        .form-control:focus { border-color: var(--primary-cyan); }
+
+        .hero { padding: 120px 0 60px; display: flex; align-items: center; justify-content: space-between; gap: 20px; overflow: hidden; }
+        .hero-content { transition: transform 0.1s ease-out; }
+        .hero-title { font-size: clamp(28px, 3.5vw, 48px); font-weight: 800; line-height: 1.2; margin-bottom: 20px; }
+        .hero-title span { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-subtitle { font-size: 18px; color: var(--text-muted); margin-bottom: 30px; max-width: 550px; }
+        .hero-buttons { display: flex; gap: 15px; flex-wrap: wrap; }
+        .hero-image { width: 250px; filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.3)); transition: transform 0.1s ease-out; }
+
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .card { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px 30px; backdrop-filter: blur(12px); transition: all 0.4s ease; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-10px); border-color: var(--primary-cyan); box-shadow: 0 10px 30px rgba(0, 210, 255, 0.1); }
+        .card-icon { width: 60px; height: 60px; border-radius: 12px; background: rgba(0, 210, 255, 0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 25px; font-size: 24px; }
+        .card h3 { font-size: 22px; margin-bottom: 15px; } 
+        .card p { color: var(--text-muted); font-size: 15px; flex: 1; }
+        .card-link { display: inline-block; margin-top: 20px; color: var(--primary-cyan); font-weight: 600; font-size: 14px; transition: 0.3s; }
+        .card:hover .card-link { transform: translateX(5px); }
+
+        .hacker-terminal { max-width: 800px; margin: 0 auto; background: #000; border: 1px solid var(--primary-cyan); border-radius: 10px; padding: 20px; font-family: 'JetBrains Mono', monospace; color: var(--success); box-shadow: 0 0 40px rgba(0, 210, 255, 0.15); height: 500px; display: flex; flex-direction: column; }
+        .term-output { flex: 1; overflow-y: auto; font-size: 14px; line-height: 1.6; margin-bottom: 15px; }
+        .term-output::-webkit-scrollbar { width: 8px; }
+        .term-output::-webkit-scrollbar-thumb { background: var(--primary-cyan); border-radius: 4px; }
+        .term-input-line { display: flex; align-items: center; gap: 10px; border-top: 1px solid rgba(0, 210, 255, 0.2); padding-top: 15px; }
+        .term-input-line span { color: var(--primary-cyan); font-weight: bold; }
+        .term-input-line input { flex: 1; background: transparent; border: none; color: var(--success); font-family: 'JetBrains Mono', monospace; font-size: 16px; outline: none; }
+
+        .leak-container { max-width: 600px; margin: 0 auto; background: #000; border: 1px solid var(--primary-cyan); border-radius: 10px; padding: 20px; font-family: 'JetBrains Mono', monospace; color: var(--success); }
+        .terminal-header { display: flex; gap: 8px; margin-bottom: 20px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red { background: #ff5f56; } .term-dot.yellow { background: #ffbd2e; } .term-dot.green { background: #27c93f; }
+        .terminal-text { min-height: 150px; font-size: 14px; line-height: 1.8; }
+        .terminal-input { display: flex; gap: 10px; margin-top: 20px; }
+        .terminal-input input { flex: 1; background: transparent; border: none; border-bottom: 1px solid var(--success); color: var(--success); font-family: inherit; outline: none; padding: 5px; }
+        .terminal-input button { background: var(--success); color: #000; border: none; padding: 5px 15px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+
+        .phishing-card { max-width: 600px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 15px; overflow: hidden; }
+        .email-header { background: rgba(0,0,0,0.3); padding: 15px 20px; border-bottom: 1px solid var(--glass-border); font-size: 14px; }
+        .email-header div { margin-bottom: 5px; }
+        .email-body { padding: 30px; font-size: 16px; line-height: 1.8; }
+        .phishing-actions { display: flex; gap: 15px; padding: 20px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--glass-border); }
+        .phishing-actions .btn { flex: 1; }
+        .phishing-result { padding: 20px; text-align: center; font-weight: bold; display: none; }
+
+        .map-container { position: relative; width: 100%; height: 400px; background: #040a14; border-radius: 20px; border: 1px solid var(--glass-border); overflow: hidden; }
+        canvas#threatMap { width: 100%; height: 100%; display: block; }
+        .quiz-container { max-width: 700px; margin: 0 auto; background: var(--bg-card); padding: 40px; border-radius: 20px; border: 1px solid var(--glass-border); }
+        .quiz-option { padding: 15px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 8px; cursor: pointer; transition: 0.2s; margin-bottom: 10px; }
+        .quiz-option:hover { background: rgba(0, 210, 255, 0.1); }
+
+        .blog-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; gap: 20px; flex-wrap: wrap; }
+        .search-box { flex: 1; max-width: 400px; position: relative; }
+        .search-box input { width: 100%; padding: 12px 20px 12px 45px; border-radius: 30px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; outline: none; }
+        .search-box::before { content: '🔍'; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); opacity: 0.7; }
+        .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .article-card { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 15px; overflow: hidden; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; }
+        .article-card:hover { transform: translateY(-5px); border-color: var(--primary-cyan); }
+        .article-img-box { width: 100%; height: 180px; background: #0b2b5c; display: flex; align-items: center; justify-content: center; font-size: 60px; overflow: hidden; }
+        .article-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .article-content { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+        .article-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--primary-cyan); margin-bottom: 10px; text-transform: uppercase; }
+        .article-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+        .tag { background: rgba(0, 210, 255, 0.1); color: var(--primary-cyan); padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(0, 210, 255, 0.3); }
+        .article-title { font-size: 18px; margin-bottom: 10px; line-height: 1.4; }
+        .article-excerpt { color: var(--text-muted); font-size: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+        
+        .article-full { max-width: 800px; margin: 100px auto 40px; background: var(--bg-card); padding: 40px; border-radius: 20px; border: 1px solid var(--glass-border); }
+        .article-full h1 { font-size: 36px; margin-bottom: 20px; line-height: 1.2; }
+        .article-full .meta { color: var(--primary-cyan); margin-bottom: 20px; font-size: 14px; display: flex; gap: 15px; }
+        .article-full .content { font-size: 18px; line-height: 1.8; white-space: pre-wrap; }
+        .back-btn { margin-bottom: 20px; display: inline-block; color: var(--primary-cyan); font-weight: 600; }
+
+        .admin-panel { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; max-width: 900px; margin: 0 auto; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .admin-table th, .admin-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--glass-border); }
+        .admin-table th { color: var(--text-muted); font-size: 13px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 13px; color: var(--text-muted); }
+        textarea.form-control { min-height: 150px; resize: vertical; }
+
+        #game-page { padding: 100px 0 40px; }
+        .game-wrapper { position: relative; max-width: 800px; margin: 0 auto; }
+        canvas#gameCanvas { display: block; width: 100%; height: auto; border-radius: 16px; border: 1px solid var(--glass-border); background: rgba(7, 16, 33, 0.8); touch-action: none; }
+        .game-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(7, 16, 33, 0.95); border-radius: 16px; padding: 20px; text-align: center; z-index: 10; }
+        .leaderboard-table { width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; background: var(--bg-card); border-radius: 15px; overflow: hidden; }
+        .leaderboard-table th, .leaderboard-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--glass-border); }
+
+        .cve-card { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 12px; padding: 20px; transition: 0.3s; border-left: 5px solid var(--text-muted); }
+        .cve-card:hover { transform: translateX(5px); border-color: var(--primary-cyan); box-shadow: 0 5px 20px rgba(0, 210, 255, 0.1); }
+        .cve-critical { border-left-color: var(--danger); background: rgba(255, 71, 87, 0.05); }
+        .cve-high { border-left-color: #ff9f43; background: rgba(255, 159, 67, 0.05); }
+        .cve-medium { border-left-color: var(--warning); background: rgba(241, 196, 15, 0.05); }
+        .cve-low { border-left-color: var(--success); background: rgba(46, 204, 113, 0.05); }
+        .cve-unknown { border-left-color: var(--text-muted); }
+        .cve-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
+        .cve-id { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 16px; color: var(--primary-cyan); }
+        .cve-severity { font-size: 12px; font-weight: 800; text-transform: uppercase; padding: 3px 10px; border-radius: 12px; background: rgba(0,0,0,0.3); }
+        .cve-critical .cve-severity { color: var(--danger); border: 1px solid var(--danger); }
+        .cve-high .cve-severity { color: #ff9f43; border: 1px solid #ff9f43; }
+        .cve-medium .cve-severity { color: var(--warning); border: 1px solid var(--warning); }
+        .cve-low .cve-severity { color: var(--success); border: 1px solid var(--success); }
+        .cve-unknown .cve-severity { color: var(--text-muted); border: 1px solid var(--text-muted); }
+        .cve-summary { color: var(--text-main); font-size: 15px; line-height: 1.6; margin-bottom: 15px; }
+        .cve-footer { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-muted); flex-wrap: wrap; gap: 10px; }
+        .cve-link { color: var(--primary-cyan); font-weight: 600; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-content { background: var(--bg-dark); border: 1px solid var(--primary-cyan); border-radius: 15px; padding: 30px; width: 100%; max-width: 400px; box-shadow: 0 0 30px rgba(0, 210, 255, 0.2); transform: translateY(20px); transition: 0.3s; position: relative; }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: var(--text-muted); }
+        
+        .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: #0b2b5c; color: white; padding: 15px 25px; border-radius: 8px; border-left: 4px solid var(--primary-cyan); box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease forwards; }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes slideOut { from { transform: translateX(0); } to { transform: translateX(100%); } }
+
+        footer { padding: 40px 0 20px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; text-align: center; color: var(--text-muted); font-size: 13px; }
+        .hacker-btn { background: none; border: none; color: #333; font-family: monospace; font-size: 16px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .hacker-btn:hover { color: var(--primary-cyan); text-shadow: 0 0 10px var(--primary-cyan); }
+
+        @media (max-width: 900px) {
+            .burger { display: flex; }
+            .nav-links { position: fixed; top: 75px; left: -100%; width: 100%; height: calc(100vh - 75px); background: rgba(7, 16, 33, 0.98); flex-direction: column; align-items: center; justify-content: center; gap: 25px; transition: 0.3s; z-index: 999; border-top: 1px solid var(--glass-border); overflow-y: auto; }
+            .nav-links.active { left: 0; }
+            .nav-links a { font-size: 18px; }
+            .hero { flex-direction: column; text-align: center; padding: 100px 0 40px; }
+            .header-max-btn { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+    <div class="toast-container" id="toast-container"></div>
+
+    <div class="modal-overlay" id="leadModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeLeadModal()">&times;</span>
+            <h2 style="margin-bottom: 20px; color: var(--primary-cyan);">Заказать аудит</h2>
+            <form id="leadForm">
+                <div class="form-group"><input type="text" id="leadName" class="form-control" placeholder="Ваше имя" required></div>
+                <div class="form-group"><input type="text" id="leadContact" class="form-control" placeholder="Email или Телефон" required></div>
+                <div class="form-group"><textarea id="leadMsg" class="form-control" placeholder="Опишите задачу..." style="min-height: 80px;"></textarea></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Отправить заявку</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div class="status-item"><div class="status-dot"></div> SOC: В сети</div>
+        <div class="status-item"><div class="status-dot"></div> Периметр: Защищен</div>
+        <div class="status-item"><div class="status-dot" style="background: var(--warning);"></div> Заблокировано: <span id="blocked-count">14,203</span></div>
+        <div class="status-item">Угроза: <span id="defcon-level" class="defcon-badge defcon-5">DEFCON 5</span></div>
+    </div>
+
+    <header>
+        <div class="container nav-wrapper">
+            <div class="logo-banner" onclick="showMain()">KIBERBEZ</div>
+            <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+            <nav class="nav-links" id="navLinks">
+                <a onclick="showMain(); toggleMenu()" id="nav-main" class="active">Главная</a>
+                <a onclick="showTerminal(); toggleMenu()" id="nav-term">💻 Терминал</a>
+                <a onclick="showBlog(); toggleMenu()" id="nav-blog">Блог</a>
+                <a onclick="showCveFeed(); toggleMenu()" id="nav-cve">🚨 CVE</a>
+                <a onclick="showLeak(); toggleMenu()" id="nav-leak">🕵️ Утечки</a>
+                <a onclick="showPhishing(); toggleMenu()" id="nav-phish">🎣 Фишинг</a>
+                <a onclick="showQuiz(); toggleMenu()" id="nav-quiz">📝 Тест</a>
+                <a onclick="showMap(); toggleMenu()" id="nav-map">🌍 Карта</a>
+                <a onclick="showGame(); toggleMenu()" id="nav-game">🎮 Игра</a>
+                <a onclick="showLeaderboard(); toggleMenu()" id="nav-leaderboard">🏆 Рекорды</a>
+                <a onclick="showAdmin(); toggleMenu()" id="nav-admin">⚙️</a>
+            </nav>
+            <a href="https://max.ru/join/HsJwwGgWoqjNWpDPAcaWhCScV-l5YodFQ1TDAE_u_6Y" target="_blank" class="btn btn-max header-max-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="margin-right: 6px;"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"/><path d="M12 6L7 14H17L12 6Z" fill="currentColor"/></svg>
+                MAX
+            </a>
+        </div>
+    </header>
+
+    <div id="main-page">
+        <section class="hero container">
+            <div class="hero-content" id="parallax-text">
+                <h1 class="hero-title">Все о <span>кибербезопасности</span></h1>
+                <p class="hero-subtitle">Проверьте свои данные на утечки, узнайте о новых CVE и попробуйте взломать систему.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="showLeak()">Проверить утечки</button>
+                    <button class="btn btn-outline" onclick="showTerminal()">Взломать систему</button>
+                    <a href="https://max.ru/join/HsJwwGgWoqjNWpDPAcaWhCScV-l5YodFQ1TDAE_u_6Y" target="_blank" class="btn btn-max">Подписаться в MAX</a>
+                </div>
+            </div>
+            <div class="hero-visual" id="parallax-image">
+                <img src="logo.png" alt="Kiberbez" class="hero-image" onerror="this.style.display='none'">
+            </div>
+        </section>
+
+        <section class="section container">
+            <div class="section-header">
+                <h2>Инструменты безопасности</h2>
+                <p>Воспользуйтесь нашими бесплатными сервисами прямо сейчас</p>
+            </div>
+            <div class="grid-3">
+                <div class="card" onclick="showLeak()" style="cursor: pointer;">
+                    <div class="card-icon">🕵️</div>
+                    <h3>Сканер утечек</h3>
+                    <p>Проверьте, не попал ли ваш email или пароль в открытые базы хакеров.</p>
+                    <span class="card-link">Проверить →</span>
+                </div>
+                <div class="card" onclick="showPhishing()" style="cursor: pointer;">
+                    <div class="card-icon">🎣</div>
+                    <h3>Симулятор фишинга</h3>
+                    <p>Пройдите тест и узнайте, сможете ли вы распознать мошенников в почте.</p>
+                    <span class="card-link">Пройти тест →</span>
+                </div>
+                <div class="card" onclick="showCveFeed()" style="cursor: pointer;">
+                    <div class="card-icon">🚨</div>
+                    <h3>Лента CVE</h3>
+                    <p>Ежедневный мониторинг реальных уязвимостей со всего мира (NVD).</p>
+                    <span class="card-link">Смотреть →</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="terminal-page" class="container section hidden" style="margin-top: 80px;">
+        <div class="section-header"><h2>Терминал Kiberbez OS</h2><p>Введите `help`, чтобы увидеть список команд</p></div>
+        <div class="hacker-terminal">
+            <div class="term-output" id="term-output">
+                Kiberbez OS v2.6.0 (c) 2026. Initializing system...<br>Connection established.<br>Type <span style="color: #fff; font-weight: bold;">help</span> for a list of commands.<br><br>
+            </div>
+            <div class="term-input-line">
+                <span>root@kiberbez:~#</span>
+                <input type="text" id="term-input" autocomplete="off" spellcheck="false" autofocus>
+            </div>
+        </div>
+    </div>
+
+    <div id="cve-page" class="container section hidden" style="margin-top: 80px;">
+        <div class="section-header">
+            <h2>Лента уязвимостей (CVE)</h2>
+            <p>Реальные данные из открытых источников. Обновляется автоматически.</p>
+        </div>
+        <div id="cve-list" style="display: flex; flex-direction: column; gap: 15px; max-width: 900px; margin: 0 auto;"></div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn btn-outline" onclick="loadCveFeed(true)">🔄 Обновить</button>
+        </div>
+    </div>
+
+    <div id="leak-page" class="container section hidden" style="margin-top: 80px;">
+        <div class="section-header"><h2>Сканер утечек данных</h2><p>Проверьте, не попал ли ваш email в базы хакеров</p></div>
+        <div class="leak-container">
+            <div class="terminal-header"><div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div></div>
+            <div class="terminal-text" id="terminal-output">root@kiberbez:~# Инициализация сканера темного веба...<br>Готов к проверке.</div>
+            <div class="terminal-input" id="leak-input-group">
+                <input type="email" id="leak-email" placeholder="Введите ваш email...">
+                <button onclick="startLeakScan()">Сканировать</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="phishing-page" class="container section hidden" style="margin-top: 80px;">
+        <div class="section-header"><h2>Симулятор фишинга</h2><p>Сможете ли вы отличить поддельное письмо от настоящего?</p></div>
+        <div class="phishing-card" id="phishing-card"></div>
+    </div>
+
+    <div id="quiz-page" class="container section hidden" style="margin-top: 80px;">
+        <div class="section-header"><h2>Насколько вы защищены?</h2></div>
+        <div class="quiz-container" id="quiz-container"></div>
+    </div>
+
+    <div id="map-page" class="container hidden" style="margin-top: 80px;">
+        <div class="section-header"><h2>Карта кибератак</h2></div>
+        <div class="map-container"><canvas id="threatMap"></canvas></div>
+    </div>
+
+    <div id="blog-page" class="container section hidden" style="margin-top: 80px;">
+        <div class="section-header"><h2>Экспертный блог</h2></div>
+        <div class="blog-controls">
+            <div class="search-box">
+                <input type="text" id="blog-search" placeholder="Поиск по статьям и тегам..." oninput="filterBlog()">
+            </div>
+            <button class="btn btn-primary" onclick="openLeadModal()">Получить аудит</button>
+        </div>
+        <div class="blog-grid" id="blog-container"></div>
+    </div>
+
+    <div id="article-page" class="container hidden">
+        <div class="article-full">
+            <a class="back-btn" onclick="showBlog()">← Назад к блогу</a>
+            <h1 id="view-title">Заголовок</h1>
+            <div class="meta" id="view-meta">Дата</div>
+            <div class="content" id="view-content">Текст...</div>
+        </div>
+    </div>
+
+    <div id="leaderboard-page" class="container section hidden" style="margin-top: 80px;">
+        <div class="section-header"><h2>🏆 Таблица рекордов</h2></div>
+        <table class="leaderboard-table">
+            <thead><tr><th>Место</th><th>Игрок</th><th>Очки</th></tr></thead>
+            <tbody id="leaderboard-body"></tbody>
+        </table>
+        <div style="text-align: center; margin-top: 20px;"><button class="btn btn-primary" onclick="showGame()">Вернуться в игру</button></div>
+    </div>
+
+    <div id="game-page" class="container hidden">
+        <div class="game-wrapper">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold;">
+                <div>Очки: <span id="score" style="color: var(--primary-cyan);">0</span></div>
+                <div>Жизни: <span id="lives" style="color: var(--danger);">🛡️🛡️🛡️</span></div>
+            </div>
+            <canvas id="gameCanvas" width="800" height="500"></canvas>
+            <div class="game-overlay" id="game-overlay">
+                <div id="game-start-screen">
+                    <h1 style="font-size: 28px; color: var(--primary-cyan);">Мишка: Щит Защиты</h1>
+                    <button class="btn btn-primary" id="startGameBtn" style="margin-top: 20px;">Начать</button>
+                </div>
+                <div id="game-over-screen" class="hidden">
+                    <h1 style="color:var(--danger)">Периметр прорван</h1>
+                    <h2 id="final-score" style="color:var(--primary-cyan);font-size:40px;"></h2>
+                    <input type="text" id="pName" class="form-control" placeholder="Ваше имя" style="max-width:200px;margin:10px auto;">
+                    <button class="btn btn-primary" id="saveScoreBtn">Сохранить результат</button>
+                    <button class="btn btn-outline" id="restartGameBtn" style="margin-top:10px;">Заново</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-page" class="container hidden" style="margin-top: 100px; padding-bottom: 50px;">
+        <div id="login-section" class="quiz-container" style="max-width: 400px;">
+            <h2 style="margin-bottom: 20px; text-align: center;">Вход</h2>
+            <input type="email" id="login-email" class="form-control" placeholder="Email" style="margin-bottom: 10px;">
+            <input type="password" id="login-pass" class="form-control" placeholder="Пароль" style="margin-bottom: 20px;">
+            <button class="btn btn-primary" style="width: 100%;" onclick="login()">Войти</button>
+        </div>
+        <div id="dashboard-section" class="admin-panel hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Управление статьями</h2>
+                <button class="btn btn-outline" onclick="toggleEditor()">+ Написать</button>
+            </div>
+            <div id="editor-section" class="hidden" style="margin-bottom: 30px; border-bottom: 1px solid var(--glass-border); padding-bottom: 20px;">
+                <input type="hidden" id="edit-id">
+                <div class="form-group"><label>Заголовок</label><input type="text" id="art-title" class="form-control"></div>
+                <div class="form-group"><label>Картинка (URL) или Эмодзи</label><input type="text" id="art-emoji" class="form-control" placeholder="https://... или 🛡️"></div>
+                <div class="form-group"><label>Теги (через запятую)</label><input type="text" id="art-tags" class="form-control" placeholder="сети, защита, вирусы"></div>
+                <div class="form-group"><label>Текст</label><textarea id="art-content" class="form-control"></textarea></div>
+                <button class="btn btn-primary" id="save-btn" onclick="saveArticle()">Сохранить</button>
+                <button class="btn btn-outline" onclick="toggleEditor()">Отмена</button>
+            </div>
+            <table class="admin-table">
+                <thead><tr><th>Заголовок</th><th>Дата</th><th>Действия</th></tr></thead>
+                <tbody id="admin-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 Kiberbez. Все права защищены.</p>
+            <div style="margin-top: 15px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <a href="mailto:info@kiberbez.ru" style="color: var(--text-muted);">info@kiberbez.ru</a>
+                <a href="https://max.ru/join/HsJwwGgWoqjNWpDPAcaWhCScV-l5YodFQ1TDAE_u_6Y" target="_blank" style="color: #6a11cb; font-weight: bold;">Канал в MAX</a>
+                <a onclick="showAdmin()" style="color: var(--text-muted);">Вход для админа</a>
+            </div>
+            <button class="hacker-btn" onclick="toggleHackerMode()" title="Секретный режим">&gt;_</button>
+        </div>
+    </footer>
+
+    <script>
+        // === SUPABASE ===
+        const SUPABASE_URL = 'https://fzndxzyjkiucuqyezjgd.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_ELv-Qvq6Bm59oo9c9QO2WQ_nKp7xEbo';
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let loadedArticles = [];
+
+        // === ЗАЩИТА ОТ XSS ===
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+
+        // === PWA Service Worker (Закомментировано до создания sw.js) ===
+        /*
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('PWA:', err));
+            });
+        }
+        */
+
+        // === WEB AUDIO (ЗВУКИ) ===
+        let audioCtx;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+        function playBeep(freq = 800, type = 'sine', duration = 0.05) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
+        }
+        document.addEventListener('click', initAudio, { once: true });
+        
+        // Отключаем звуки наведения на тач-устройствах
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (!isTouchDevice) {
+            document.addEventListener('mouseover', (e) => { 
+                if (e.target.closest('button, a, .quiz-option, .article-card, .nav-links a, .card')) {
+                    playBeep(1200, 'sine', 0.03); 
+                }
+            });
+        }
+
+        // === TOASTS ===
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${type === 'success' ? '✅' : (type === 'error' ? '❌' : 'ℹ️')}</span> ${escapeHTML(message)}`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.animation = 'slideOut 0.3s forwards'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        // === МОДАЛЬНОЕ ОКНО ===
+        function openLeadModal() { document.getElementById('leadModal').classList.add('active'); }
+        function closeLeadModal() { document.getElementById('leadModal').classList.remove('active'); }
+        document.getElementById('leadForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); const btn = e.target.querySelector('button'); btn.innerText = 'Отправка...'; btn.disabled = true;
+            const WORKER_URL = 'https://ВАШ_WORKER.workers.dev'; 
+            try {
+                if (WORKER_URL.includes('ВАШ_WORKER')) { await new Promise(r => setTimeout(r, 1000)); showToast('Заявка отправлена! (Тест)', 'success'); }
+                else { await fetch(WORKER_URL, { method: 'POST', body: JSON.stringify({name: document.getElementById('leadName').value, contact: document.getElementById('leadContact').value, message: document.getElementById('leadMsg').value}), headers: {'Content-Type': 'application/json'} }); showToast('Заявка успешно отправлена!', 'success'); }
+                closeLeadModal(); e.target.reset();
+            } catch (err) { showToast('Ошибка отправки.', 'error'); } finally { btn.innerText = 'Отправить заявку'; btn.disabled = false; }
+        });
+
+        // === НАВИГАЦИЯ ===
+        const pages = ['main', 'blog', 'map', 'quiz', 'game', 'leaderboard', 'admin', 'leak', 'phishing', 'article', 'terminal', 'cve'];
+        function hideAll() {
+            pages.forEach(p => document.getElementById(`${p}-page`)?.classList.add('hidden'));
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            if (window.stopGameLoop) window.stopGameLoop();
+            if (window.mapAnim) cancelAnimationFrame(window.mapAnim);
+        }
+        function toggleMenu() { document.getElementById('navLinks').classList.toggle('active'); }
+        function showMain() { hideAll(); document.getElementById('main-page').classList.remove('hidden'); document.getElementById('nav-main').classList.add('active'); }
+        function showTerminal() { hideAll(); document.getElementById('terminal-page').classList.remove('hidden'); document.getElementById('nav-term').classList.add('active'); document.getElementById('term-input').focus(); }
+        function showLeak() { hideAll(); document.getElementById('leak-page').classList.remove('hidden'); document.getElementById('nav-leak').classList.add('active'); }
+        function showPhishing() { hideAll(); document.getElementById('phishing-page').classList.remove('hidden'); document.getElementById('nav-phish').classList.add('active'); initPhishing(); }
+        function showQuiz() { hideAll(); document.getElementById('quiz-page').classList.remove('hidden'); document.getElementById('nav-quiz').classList.add('active'); initQuiz(); }
+        function showMap() { hideAll(); document.getElementById('map-page').classList.remove('hidden'); document.getElementById('nav-map').classList.add('active'); initMap(); }
+        function showGame() { hideAll(); document.getElementById('game-page').classList.remove('hidden'); document.getElementById('nav-game').classList.add('active'); if(window.redrawGame) window.redrawGame(); }
+        function showLeaderboard() { hideAll(); document.getElementById('leaderboard-page').classList.remove('hidden'); document.getElementById('nav-leaderboard').classList.add('active'); loadLeaderboard(); }
+        function showAdmin() { hideAll(); document.getElementById('admin-page').classList.remove('hidden'); document.getElementById('nav-admin').classList.add('active'); checkUser(); }
+        function showBlog() { hideAll(); document.getElementById('blog-page').classList.remove('hidden'); document.getElementById('nav-blog').classList.add('active'); loadBlog(); }
+        function showCveFeed() { hideAll(); document.getElementById('cve-page').classList.remove('hidden'); document.getElementById('nav-cve').classList.add('active'); loadCveFeed(); }
+
+        // === ТЕРМИНАЛ ===
+        const termInput = document.getElementById('term-input');
+        const termOutput = document.getElementById('term-output');
+        
+        const commands = {
+            'help': 'Доступные команды:<br> - <span style="color:#fff">help</span><br> - <span style="color:#fff">whoami</span><br> - <span style="color:#fff">scan</span><br> - <span style="color:#fff">matrix</span><br> - <span style="color:#fff">hack</span><br> - <span style="color:#fff">clear</span><br> - <span style="color:#fff">sudo</span>',
+            'whoami': 'Гость (уровень доступа: ограничен).<br>IP: 192.168.1.104<br>Роль: Penetration Tester',
+            'sudo': '<span style="color:var(--danger)">Ошибка: нет прав. Инцидент будет зафиксирован.</span>'
+        };
+
+        termInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = termInput.value.trim().toLowerCase();
+                termOutput.innerHTML += `<span style="color:#fff">root@kiberbez:~#</span> ${escapeHTML(cmd)}<br>`;
+                termInput.value = '';
+                
+                if (cmd === 'clear') termOutput.innerHTML = '';
+                else if (cmd === 'matrix') { toggleHackerMode(); termOutput.innerHTML += `> Матрица переключена.<br><br>`; }
+                else if (cmd === 'scan') {
+                    termOutput.innerHTML += `> Nmap сканирование...<br>`;
+                    setTimeout(() => termOutput.innerHTML += `> Порт 22 (SSH) открыт<br>`, 500);
+                    setTimeout(() => termOutput.innerHTML += `> Порт 80 (HTTP) открыт<br>`, 1000);
+                    setTimeout(() => termOutput.innerHTML += `> Найдено 2 уязвимости.<br><br>`, 1500);
+                } else if (cmd === 'hack') {
+                    termOutput.innerHTML += `> Brute-force...<br>`;
+                    setTimeout(() => termOutput.innerHTML += `> [▓▓▓▓░░░░░░] 40%<br>`, 400);
+                    setTimeout(() => termOutput.innerHTML += `> [▓▓▓▓▓▓▓▓░░] 80%<br>`, 800);
+                    setTimeout(() => termOutput.innerHTML += `<span style="color:var(--success)">> Доступ получен!</span><br><br>`, 1200);
+                } else if (commands[cmd]) termOutput.innerHTML += `> ${commands[cmd]}<br><br>`;
+                else if (cmd !== '') termOutput.innerHTML += `> Команда не найдена. Введите 'help'.<br><br>`;
+                termOutput.scrollTop = termOutput.scrollHeight;
+            }
+        });
+
+        // === DEFCON ===
+        setInterval(() => {
+            const defconEl = document.getElementById('defcon-level');
+            if(!defconEl) return;
+            const levels = [ {lvl: 5, cls: 'defcon-5', txt: 'DEFCON 5'}, {lvl: 4, cls: 'defcon-5', txt: 'DEFCON 4'}, {lvl: 3, cls: 'defcon-3', txt: 'DEFCON 3'}, {lvl: 2, cls: 'defcon-3', txt: 'DEFCON 2'}, {lvl: 1, cls: 'defcon-1', txt: 'DEFCON 1'} ];
+            const rand = Math.random();
+            let idx = 0;
+            if(rand > 0.9) idx = 4; else if(rand > 0.7) idx = 2; else if(rand > 0.4) idx = 1;
+            const lvl = levels[idx];
+            defconEl.className = `defcon-badge ${lvl.cls}`;
+            defconEl.innerText = lvl.txt;
+            if (lvl.lvl === 1) document.body.classList.add('global-alert');
+            else document.body.classList.remove('global-alert');
+        }, 8000);
+
+        // === КУРСОР ===
+        if (!isTouchDevice) {
+            const cursorDot = document.getElementById('cursor-dot');
+            const cursorOutline = document.getElementById('cursor-outline');
+            let mouseX = 0, mouseY = 0, outlineX = 0, outlineY = 0;
+            
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX; mouseY = e.clientY;
+                cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+                if (!document.getElementById('main-page').classList.contains('hidden')) {
+                    const text = document.getElementById('parallax-text');
+                    const img = document.getElementById('parallax-image');
+                    if(text && img) {
+                        text.style.transform = `translate(${(window.innerWidth/2 - mouseX)/50}px, ${(window.innerHeight/2 - mouseY)/50}px)`;
+                        img.style.transform = `translate(${-(window.innerWidth/2 - mouseX)/25}px, ${-(window.innerHeight/2 - mouseY)/25}px)`;
+                    }
+                }
+            });
+            function animateCursor() {
+                outlineX += (mouseX - outlineX) * 0.15; outlineY += (mouseY - outlineY) * 0.15;
+                cursorOutline.style.transform = `translate(${outlineX}px, ${outlineY}px)`;
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+            document.addEventListener('mouseover', (e) => {
+                if(e.target.closest('button, a, .quiz-option, .article-card, .card')) {
+                    cursorOutline.style.width = '50px'; cursorOutline.style.height = '50px'; cursorOutline.style.backgroundColor = 'rgba(0,210,255,0.1)';
+                } else {
+                    cursorOutline.style.width = '30px'; cursorOutline.style.height = '30px'; cursorOutline.style.backgroundColor = 'transparent';
+                }
+            });
+        }
+
+        // === УТЕЧКИ ===
+        function startLeakScan() {
+            const email = document.getElementById('leak-email').value;
+            const out = document.getElementById('terminal-output');
+            if(!email.includes('@')) return showToast('Введите email', 'error');
+            document.getElementById('leak-input-group').classList.add('hidden');
+            out.innerHTML = `root@kiberbez:~# target: ${escapeHTML(email)}<br>> Подключение к базам...`;
+            setTimeout(() => {
+                out.innerHTML += `<br>> Анализ: 100%`;
+                setTimeout(() => {
+                    const hacked = Math.random() > 0.5;
+                    if(hacked) out.innerHTML += `<br><span style="color: #ff4757;">[!!!] Email найден в 3 базах!</span><br>> Смените пароль.`;
+                    else out.innerHTML += `<br><span style="color: #2ecc71;">[OK] Совпадений не найдено.</span>`;
+                    out.innerHTML += `<br><br>> <button class="btn btn-primary" onclick="openLeadModal()" style="font-size: 12px; padding: 5px 10px;">Получить аудит</button>`;
+                }, 1000);
+            }, 1500);
+        }
+
+        // === ФИШИНГ ===
+        const phishingData = [
+            { sender: "support@paypal-secure-update.com", subject: "Срочно! Аккаунт заблокирован", body: "Подтвердите данные по ссылке.", isPhishing: true, reason: "Поддельный домен." },
+            { sender: "hr@yourcompany.ru", subject: "Расписание встреч", body: "Привет! Во вложении расписание.", isPhishing: false, reason: "Обычное рабочее письмо." },
+            { sender: "security@sberbank.ru", subject: "Отмена перевода", body: "Перейдите по ссылке http://sberbank-online.xyz", isPhishing: true, reason: "Домен .xyz, а не sberbank.ru." }
+        ];
+        let currentPhish = 0;
+        function initPhishing() { currentPhish = 0; renderPhishing(); }
+        function renderPhishing() {
+            const card = document.getElementById('phishing-card');
+            if (currentPhish >= phishingData.length) {
+                card.innerHTML = `<div style="padding: 40px; text-align: center;"><h2 style="color: var(--success);">Тест пройден!</h2><button class="btn btn-primary" onclick="initPhishing()" style="margin-top: 20px;">Еще раз</button></div>`;
+                return;
+            }
+            const d = phishingData[currentPhish];
+            card.innerHTML = `
+                <div class="email-header"><div><b>От:</b> ${escapeHTML(d.sender)}</div><div><b>Тема:</b> ${escapeHTML(d.subject)}</div></div>
+                <div class="email-body">${escapeHTML(d.body)}</div>
+                <div class="phishing-actions">
+                    <button class="btn btn-danger" onclick="checkPhishing(true)">🚨 Фишинг!</button>
+                    <button class="btn btn-primary" onclick="checkPhishing(false)">✅ Настоящее</button>
+                </div>
+                <div class="phishing-result" id="phish-result"></div>
+            `;
+        }
+        function checkPhishing(choice) {
+            const d = phishingData[currentPhish];
+            const res = document.getElementById('phish-result');
+            res.style.display = 'block';
+            res.innerHTML = `<div style="font-size: 20px; color: ${choice === d.isPhishing ? 'var(--success)' : 'var(--danger)'};">${choice === d.isPhishing ? '✅ Верно!' : '❌ Ошибка!'}</div><p style="font-size: 14px; margin-top: 10px;">${escapeHTML(d.reason)}</p><button class="btn btn-outline" style="margin-top: 15px;" onclick="currentPhish++; renderPhishing()">Далее →</button>`;
+            document.querySelector('.phishing-actions').style.display = 'none';
+        }
+
+        // === ТЕСТ ===
+        const quizData = [
+            { q: "Используете 2FA?", opts: ["Везде", "Иногда", "Нет"], sc: [20, 10, 0] },
+            { q: "Где храните пароли?", opts: ["Менеджер", "Блокнот", "Одинаковые"], sc: [20, 10, 0] },
+            { q: "Знаете про фишинг?", opts: ["Да", "Слышал", "Нет"], sc: [20, 10, 0] }
+        ];
+        let currQ = 0, qScore = 0;
+        function initQuiz() { currQ = 0; qScore = 0; renderQuiz(); }
+        function renderQuiz() {
+            const c = document.getElementById('quiz-container');
+            if(currQ >= quizData.length) {
+                c.innerHTML = `<h2 style="text-align: center; color: var(--success);">Результат: ${qScore}%</h2><button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="showMain()">На главную</button>`;
+                return;
+            }
+            const q = quizData[currQ];
+            c.innerHTML = `<div style="margin-bottom: 20px;">${escapeHTML(q.q)}</div>${q.opts.map((o,i) => `<div class="quiz-option" onclick="qScore+=${q.sc[i]}; currQ++; renderQuiz()">${escapeHTML(o)}</div>`).join('')}`;
+        }
+
+        // === КАРТА ===
+        function initMap() {
+            const canvas = document.getElementById('threatMap'); if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight;
+            let attacks = [];
+            function draw() {
+                ctx.fillStyle = '#040a14'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.strokeStyle = 'rgba(0, 210, 255, 0.05)';
+                for(let i=0; i<canvas.width; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
+                for(let i=0; i<canvas.height; i+=40) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(canvas.width,i); ctx.stroke(); }
+                if(Math.random() > 0.7) attacks.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, tx: canvas.width/2, ty: canvas.height/2, p: 0, c: Math.random() > 0.8 ? '#ff4757' : '#00d2ff' });
+                attacks.forEach((a, i) => {
+                    a.p += 0.02; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(a.x + (a.tx-a.x)*a.p, a.y + (a.ty-a.y)*a.p);
+                    ctx.strokeStyle = a.c; ctx.globalAlpha = 1-a.p; ctx.stroke(); ctx.globalAlpha = 1;
+                    if(a.p >= 1) attacks.splice(i, 1);
+                });
+                window.mapAnim = requestAnimationFrame(draw);
+            }
+            if(window.mapAnim) cancelAnimationFrame(window.mapAnim); draw();
+        }
+
+        // === HACKER MODE ===
+        let matrixInt;
+        function toggleHackerMode() {
+            document.body.classList.toggle('hacker-mode');
+            const canvas = document.getElementById('matrix-canvas'); const ctx = canvas.getContext('2d');
+            if (document.body.classList.contains('hacker-mode')) {
+                canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()"; const drops = Array(Math.floor(canvas.width/16)).fill(1);
+                matrixInt = setInterval(() => {
+                    ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle = "#0F0"; ctx.font = "16px monospace";
+                    drops.forEach((y, i) => { ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*16, y*16); if(y*16 > canvas.height && Math.random() > 0.975) drops[i]=0; drops[i]++; });
+                }, 50);
+            } else { clearInterval(matrixInt); ctx.clearRect(0,0,canvas.width,canvas.height); }
+        }
+
+        // === БЛОГ ===
+        async function loadBlog() {
+            const container = document.getElementById('blog-container');
+            container.innerHTML = '<p style="color: var(--text-muted);">Загрузка...</p>';
+            const { data, error } = await supabaseClient.from('articles').select('*').order('created_at', { ascending: false });
+            if (error) { container.innerHTML = '<p style="color: var(--danger);">Ошибка загрузки статей.</p>'; return; }
+            loadedArticles = data || [];
+            filterBlog();
+        }
+        function filterBlog() {
+            const query = document.getElementById('blog-search').value.toLowerCase();
+            const container = document.getElementById('blog-container');
+            const filtered = loadedArticles.filter(a => 
+                a.title.toLowerCase().includes(query) || a.content.toLowerCase().includes(query) || (a.tags && a.tags.toLowerCase().includes(query))
+            );
+            if (filtered.length === 0) { container.innerHTML = '<p style="color: var(--text-muted);">Ничего не найдено.</p>'; return; }
+            container.innerHTML = filtered.map(art => {
+                const date = new Date(art.created_at).toLocaleDateString('ru-RU');
+                const readTime = Math.ceil(art.content.split(' ').length / 180) || 1;
+                let cover = art.emoji || '📄';
+                if (cover.startsWith('http')) cover = `<img src="${escapeHTML(cover)}">`;
+                else cover = escapeHTML(cover);
+                
+                let tags = '';
+                if(art.tags) tags = `<div class="article-tags">${art.tags.split(',').map(t => `<span class="tag">#${escapeHTML(t.trim())}</span>`).join('')}</div>`;
+                
+                return `<div class="article-card" onclick="readArticle('${art.id}')">
+                    <div class="article-img-box">${cover}</div>
+                    <div class="article-content">
+                        <div class="article-meta"><span>${date}</span><span>⏱ ${readTime} мин</span></div>
+                        <h3 class="article-title">${escapeHTML(art.title)}</h3>${tags}
+                        <p class="article-excerpt">${escapeHTML(art.content)}</p>
+                    </div></div>`;
+            }).join('');
+        }
+        function readArticle(id) {
+            const art = loadedArticles.find(a => a.id === id); if(!art) return;
+            hideAll();
+            document.getElementById('article-page').classList.remove('hidden');
+            document.getElementById('view-title').innerText = art.title;
+            const date = new Date(art.created_at).toLocaleDateString('ru-RU');
+            const readTime = Math.ceil(art.content.split(' ').length / 180) || 1;
+            document.getElementById('view-meta').innerText = `${date} • ⏱ ${readTime} мин`;
+            document.getElementById('view-content').innerText = art.content;
+            window.scrollTo(0, 0);
+        }
+
+        // === АДМИНКА ===
+        async function checkUser() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('dashboard-section').classList.remove('hidden');
+                loadAdminArticles();
+            } else {
+                document.getElementById('login-section').classList.remove('hidden');
+                document.getElementById('dashboard-section').classList.add('hidden');
+            }
+        }
+        async function login() {
+            const { error } = await supabaseClient.auth.signInWithPassword({ 
+                email: document.getElementById('login-email').value, 
+                password: document.getElementById('login-pass').value 
+            });
+            if (error) showToast('Ошибка входа: ' + error.message, 'error');
+            else { showToast('Успешный вход!', 'success'); checkUser(); }
+        }
+        async function loadAdminArticles() {
+            const tbody = document.getElementById('admin-table-body');
+            const { data } = await supabaseClient.from('articles').select('*').order('created_at', { ascending: false });
+            loadedArticles = data || [];
+            tbody.innerHTML = loadedArticles.map(art => `
+                <tr><td>${escapeHTML(art.title)}</td><td>${new Date(art.created_at).toLocaleDateString('ru-RU')}</td>
+                <td><button class="btn btn-outline btn-sm" onclick="editArticle('${art.id}')">Ред.</button> <button class="btn btn-danger btn-sm" onclick="deleteArticle('${art.id}')">Удал.</button></td></tr>
+            `).join('');
+        }
+        function toggleEditor() {
+            const ed = document.getElementById('editor-section');
+            ed.classList.toggle('hidden');
+            if(ed.classList.contains('hidden')) {
+                document.getElementById('edit-id').value = '';
+                document.getElementById('art-title').value = '';
+                document.getElementById('art-emoji').value = '';
+                document.getElementById('art-tags').value = '';
+                document.getElementById('art-content').value = '';
+            }
+        }
+        async function saveArticle() {
+            const id = document.getElementById('edit-id').value;
+            const payload = {
+                title: document.getElementById('art-title').value.trim(),
+                emoji: document.getElementById('art-emoji').value.trim() || '📄',
+                tags: document.getElementById('art-tags').value.trim(),
+                content: document.getElementById('art-content').value.trim()
+            };
+            if(!payload.title || !payload.content) { showToast('Заполните поля!', 'error'); return; }
+            const btn = document.getElementById('save-btn'); btn.innerText = '...';
+            if(id) await supabaseClient.from('articles').update(payload).eq('id', id);
+            else await supabaseClient.from('articles').insert([payload]);
+            btn.innerText = 'Сохранить';
+            toggleEditor(); loadAdminArticles();
+            showToast('Статья сохранена', 'success');
+        }
+        function editArticle(id) {
+            const art = loadedArticles.find(a => a.id === id); if(!art) return;
+            document.getElementById('edit-id').value = art.id;
+            document.getElementById('art-title').value = art.title;
+            document.getElementById('art-emoji').value = art.emoji || '';
+            document.getElementById('art-tags').value = art.tags || '';
+            document.getElementById('art-content').value = art.content;
+            document.getElementById('editor-section').classList.remove('hidden');
+        }
+        async function deleteArticle(id) {
+            if(!confirm('Удалить?')) return;
+            await supabaseClient.from('articles').delete().eq('id', id);
+            loadAdminArticles();
+            showToast('Удалено', 'success');
+        }
+
+        // === CVE ЛЕНТА ===
+        const CVE_CACHE_KEY = 'kiberbez_cve_cache';
+        const CVE_CACHE_TTL = 1000 * 60 * 60;
+        async function loadCveFeed(forceReload = false) {
+            const container = document.getElementById('cve-list');
+            if (!forceReload) {
+                const cached = localStorage.getItem(CVE_CACHE_KEY);
+                if (cached) {
+                    try {
+                        const { timestamp, data } = JSON.parse(cached);
+                        if (Date.now() - timestamp < CVE_CACHE_TTL) { renderCveList(data); return; }
+                    } catch (e) {}
+                }
+            }
+            container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Загрузка...</p>';
+            try {
+                const res = await fetch('https://cve.circl.lu/api/last/15');
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                localStorage.setItem(CVE_CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: data }));
+                renderCveList(data);
+            } catch (error) {
+                console.error("Ошибка загрузки CVE:", error);
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--text-muted);">
+                        <p>Не удалось загрузить ленту CVE напрямую (возможна блокировка CORS).</p>
+                        <p>Попробуйте обновить страницу или проверьте подключение к сети.</p>
+                        <button class="btn btn-outline" onclick="loadCveFeed(true)" style="margin-top: 10px;">Повторить попытку</button>
+                    </div>`;
+            }
+        }
+        function renderCveList(data) {
+            const container = document.getElementById('cve-list');
+            if (!data || !data.length) { container.innerHTML = '<p style="text-align: center;">Нет данных.</p>'; return; }
+            container.innerHTML = data.map(item => {
+                const rawId = item.id || item.cve_id || 'CVE-UNKNOWN';
+                const id = escapeHTML(rawId);
+                const summary = escapeHTML(item.summary || item.details || 'Описание отсутствует.');
+                const published = item.published ? new Date(item.published).toLocaleDateString('ru-RU') : '—';
+                let cvss = null;
+                if (typeof item.cvss === 'number') cvss = item.cvss;
+                else if (item.cvssScore) cvss = item.cvssScore;
+                else if (item.cvssv3) cvss = item.cvssv3;
+                else if (item.metrics?.cvssMetricV31?.[0]?.cvssData?.baseScore) cvss = item.metrics.cvssMetricV31[0].cvssData.baseScore;
+                let cls = 'cve-unknown', txt = 'Не оценен';
+                if (cvss >= 9.0) { cls = 'cve-critical'; txt = 'КРИТИЧЕСКИЙ'; }
+                else if (cvss >= 7.0) { cls = 'cve-high'; txt = 'Высокий'; }
+                else if (cvss >= 4.0) { cls = 'cve-medium'; txt = 'Средний'; }
+                else if (cvss !== null) { cls = 'cve-low'; txt = 'Низкий'; }
+                
+                // ФИКС: Строгая проверка ID перед созданием ссылки (Защита от XSS)
+                const isSafeId = /^CVE-\d{4}-\d{4,}$/.test(rawId);
+                const nvdLink = isSafeId ? `https://nvd.nist.gov/vuln/detail/${rawId}` : '#';
+                
+                return `<div class="cve-card ${cls}">
+                    <div class="cve-header"><span class="cve-id">${id}</span><span class="cve-severity">${txt}${cvss ? ` (${cvss.toFixed(1)})` : ''}</span></div>
+                    <p class="cve-summary">${summary}</p>
+                    <div class="cve-footer"><span>📅 ${published}</span>${nvdLink !== '#' ? `<a href="${nvdLink}" target="_blank" rel="noopener noreferrer" class="cve-link">Подробнее →</a>` : ''}</div>
+                </div>`;
+            }).join('');
+        }
+
+        // === ИГРА И РЕКОРДЫ ===
+        async function loadLeaderboard() {
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = '<tr><td colspan="3">Загрузка...</td></tr>';
+            const { data } = await supabaseClient.from('game_leaderboard').select('*').order('score', { ascending: false }).limit(10);
+            if(!data || !data.length) return tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Пусто</td></tr>';
+            tbody.innerHTML = data.map((r,i) => `<tr><td>${i+1}</td><td>${escapeHTML(r.player_name)}</td><td style="color:var(--primary-cyan)">${r.score}</td></tr>`).join('');
+        }
+
+        (function() {
+            const canvas = document.getElementById('gameCanvas'), ctx = canvas.getContext('2d');
+            const overlay = document.getElementById('game-overlay');
+            const startScreen = document.getElementById('game-start-screen');
+            const overScreen = document.getElementById('game-over-screen');
+            const startBtn = document.getElementById('startGameBtn');
+            const restartBtn = document.getElementById('restartGameBtn');
+            const saveBtn = document.getElementById('saveScoreBtn');
+            const finalScoreEl = document.getElementById('final-score');
+            
+            const W = canvas.width, H = canvas.height;
+            let state = 'idle', score = 0, lives = 3, fId = null, lastT = 0, player = { x: W/2, y: H-60, r: 60 }, viruses = [], keys = { l:0, r:0 };
+
+            function loop(t) {
+                if(!lastT) lastT = t; let dt = Math.min(t-lastT, 50); lastT = t;
+                if(state === 'playing') {
+                    if(keys.l) player.x -= 8 * (dt/16); if(keys.r) player.x += 8 * (dt/16);
+                    player.x = Math.max(player.r, Math.min(W-player.r, player.x));
+                    if(Math.random() < 0.02) viruses.push({ x: Math.random()*(W-40)+20, y: -20, r: 15, sp: Math.random()*2+2 });
+                    for(let i=viruses.length-1; i>=0; i--) {
+                        let v = viruses[i]; v.y += v.sp * (dt/16);
+                        if(Math.hypot(v.x-player.x, v.y-player.y) < player.r + v.r) { viruses.splice(i,1); score++; document.getElementById('score').innerText = score; }
+                        else if(v.y > H) { viruses.splice(i,1); lives--; document.getElementById('lives').innerText = '🛡️'.repeat(lives) || '—'; if(lives<=0) end(); }
+                    }
+                }
+                ctx.fillStyle = '#071021'; ctx.fillRect(0,0,W,H);
+                viruses.forEach(v => { ctx.beginPath(); ctx.arc(v.x,v.y,v.r,0,Math.PI*2); ctx.fillStyle = '#ff4757'; ctx.fill(); });
+                ctx.beginPath(); ctx.arc(player.x, player.y, player.r, Math.PI, 0); ctx.strokeStyle = '#00d2ff'; ctx.lineWidth = 8; ctx.stroke();
+                fId = requestAnimationFrame(loop);
+            }
+
+            function start() {
+                state = 'playing'; score = 0; lives = 3; viruses = []; player.x = W/2;
+                document.getElementById('score').innerText = 0; document.getElementById('lives').innerText = '🛡️🛡️🛡️';
+                overlay.classList.add('hidden'); lastT = 0;
+                if(fId) cancelAnimationFrame(fId); fId = requestAnimationFrame(loop);
+            }
+
+            function end() {
+                state = 'gameover'; if(fId) cancelAnimationFrame(fId); fId = null;
+                
+                // ФИКС: Не перезаписываем HTML, а показываем скрытый блок
+                finalScoreEl.innerText = score;
+                document.getElementById('pName').value = '';
+                startScreen.classList.add('hidden');
+                overScreen.classList.remove('hidden');
+                overlay.classList.remove('hidden');
+            }
+
+            startBtn.onclick = start;
+            restartBtn.onclick = () => {
+                overScreen.classList.add('hidden');
+                startScreen.classList.remove('hidden');
+                start();
+            };
+            saveBtn.onclick = async () => {
+                const name = document.getElementById('pName').value || 'Аноним';
+                await supabaseClient.from('game_leaderboard').insert([{ player_name: name, score }]);
+                showLeaderboard();
+            };
+
+            canvas.addEventListener('mousemove', e => { if(state==='playing') player.x = Math.max(player.r, Math.min(W-player.r, (e.clientX - canvas.getBoundingClientRect().left) * (W / canvas.getBoundingClientRect().width))); });
+            canvas.addEventListener('touchmove', e => { e.preventDefault(); if(state==='playing') player.x = Math.max(player.r, Math.min(W-player.r, (e.touches[0].clientX - canvas.getBoundingClientRect().left) * (W / canvas.getBoundingClientRect().width))); }, { passive: false });
+            window.addEventListener('keydown', e => { if(e.key==='ArrowLeft'||e.key==='a') keys.l=1; if(e.key==='ArrowRight'||e.key==='d') keys.r=1; });
+            window.addEventListener('keyup', e => { if(e.key==='ArrowLeft'||e.key==='a') keys.l=0; if(e.key==='ArrowRight'||e.key==='d') keys.r=0; });
+            
+            requestAnimationFrame(loop);
+            window.stopGameLoop = () => { if(fId) { cancelAnimationFrame(fId); fId = null; } };
+            window.redrawGame = () => { if(state==='idle') requestAnimationFrame(loop); };
+        })();
+
+        // === СТАТУС-БАР ===
+        setInterval(() => { const el = document.getElementById('blocked-count'); if(el) el.innerText = (parseInt(el.innerText.replace(/,/g,'')) + Math.floor(Math.random()*5)).toLocaleString(); }, 3000);
+    </script>
+</body>
+</html>
