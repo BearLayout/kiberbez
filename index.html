@@ -23,7 +23,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- Leaflet.js для реальной карты -->
+    <!-- Leaflet.js -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
@@ -148,7 +148,7 @@
         .terminal-input input { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--success); color: var(--success); font-family: inherit; outline: none; padding: 5px 0; }
         .terminal-input button { background: var(--success); color: #000; border: none; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; }
 
-        /* КАРТА (LEAFLET) - ИСПРАВЛЕННЫЕ СТИЛИ */
+        /* КАРТА (LEAFLET) */
         .map-container { 
             position: relative; 
             width: 100%; 
@@ -163,13 +163,7 @@
             height: 100%; 
             background: #071021; 
         }
-        /* Оформление ссылки в углу карты */
-        .leaflet-control-attribution { 
-            background: rgba(7, 16, 33, 0.8) !important; 
-            color: var(--text-muted) !important; 
-            font-size: 10px !important; 
-        }
-        .leaflet-control-attribution a { color: var(--primary-cyan) !important; }
+        /* Убираем стили для .leaflet-control-attribution, так как саму надпись мы отключили */
         
         .attack-line { filter: drop-shadow(0 0 4px currentColor); }
         .pulse-marker { animation: pulse-animation 1.5s infinite; }
@@ -773,12 +767,11 @@
             if (!threatMap) {
                 threatMap = L.map('threatMap', {
                     zoomControl: false,
-                    attributionControl: true
+                    attributionControl: false // Отключаем надпись в углу
                 }).setView([20, 0], 2); // Центр мира
 
                 // Тёмный слой карты от Esri (не требует API-ключа)
                 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-                    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
                     maxZoom: 16
                 }).addTo(threatMap);
 
