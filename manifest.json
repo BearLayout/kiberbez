@@ -1,0 +1,23 @@
+{
+  "name": "Kiberbez - Центр Кибербезопасности",
+  "short_name": "Kiberbez",
+  "description": "Проверка утечек, OSINT, тесты на фишинг, игры и новости кибербезопасности",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#071021",
+  "theme_color": "#00d2ff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
