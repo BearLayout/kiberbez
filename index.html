@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kiberbez | Центр Кибербезопасности</title>
     
+    <!-- PWA НАСТРОЙКИ -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#071021">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Kiberbez">
+    <link rel="apple-touch-icon" href="logo.png">
+    <!-- КОНЕЦ PWA НАСТРОЕК -->
+
     <meta name="description" content="Kiberbez - проверьте утечки данных, пройдите тест на фишинг, узнайте о новых CVE, сыграйте в игру и повысьте свой уровень кибербезопасности.">
     <link rel="icon" href="logo.png" type="image/png">
     <meta property="og:title" content="Kiberbez | Центр Кибербезопасности">
@@ -12,22 +21,16 @@
     <meta property="og:image" content="logo.png">
     <meta property="og:type" content="website">
 
-    <meta name="theme-color" content="#071021">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Kiberbez">
-    <link rel="apple-touch-icon" href="logo.png">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
-        /* === БАЗОВЫЕ СТИЛИ === */
         :root {
             --bg-dark: #071021; --bg-card: rgba(20, 40, 80, 0.4); --primary-cyan: #00d2ff;
             --primary-blue: #0066cc; --text-main: #ffffff; --text-muted: #94a3b8;
@@ -38,9 +41,7 @@
         
         html, body { overflow-x: hidden; width: 100%; }
         
-        .cursor-dot, .cursor-outline { 
-            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; z-index: 9999; pointer-events: none; will-change: transform;
-        }
+        .cursor-dot, .cursor-outline { position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; z-index: 9999; pointer-events: none; will-change: transform; }
         .cursor-dot { width: 6px; height: 6px; background-color: var(--primary-cyan); box-shadow: 0 0 10px var(--primary-cyan); }
         .cursor-outline { width: 30px; height: 30px; border: 2px solid rgba(0, 210, 255, 0.5); transition: width 0.2s ease-out, height 0.2s ease-out, background-color 0.2s ease-out, border-color 0.2s ease-out; }
         .cursor-outline.hovering { width: 50px; height: 50px; background-color: rgba(0, 210, 255, 0.1); border-color: rgba(0, 210, 255, 1); }
@@ -176,7 +177,7 @@
 
         #game-page { padding: 80px 0 30px; }
         .game-wrapper { position: relative; width: 100%; max-width: 800px; margin: 0 auto; }
-        canvas#gameCanvas { display: block; width: 100%; height: auto; border-radius: 16px; border: 1px solid var(--glass-border); background: rgba(7, 16, 33, 0.8); touch-action: none; }
+        canvas#gameCanvas { display: block; width: 100%; height: auto; border-radius: 16px; border: 1px solid var(--glass-border); background: #040810; touch-action: none; }
         .game-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(7, 16, 33, 0.95); border-radius: 16px; padding: 20px; text-align: center; z-index: 10; }
         .leaderboard-table { width: 100%; max-width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 15px; overflow: hidden; font-size: 14px; }
         .leaderboard-table th, .leaderboard-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--glass-border); }
@@ -253,10 +254,44 @@
             .article-full .content { font-size: 18px; }
         }
         
-        /* Стили для авторизации */
         .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); }
         .auth-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: var(--text-muted); transition: 0.3s; }
         .auth-tab.active { color: var(--primary-cyan); border-bottom: 2px solid var(--primary-cyan); }
+
+        .news-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .news-tab { padding: 8px 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text-muted); transition: 0.3s; white-space: nowrap; }
+        .news-tab.active { background: var(--primary-cyan); color: #000; border-color: var(--primary-cyan); }
+        .news-list { display: flex; flex-direction: column; gap: 15px; max-width: 900px; margin: 0 auto; }
+        .news-item { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; transition: 0.3s; display: flex; flex-direction: column; }
+        .news-item:hover { border-color: var(--primary-cyan); transform: translateX(5px); box-shadow: 0 5px 15px rgba(0, 210, 255, 0.05); }
+        .news-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; line-height: 1.4; }
+        .news-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .news-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--primary-cyan); }
+        .news-source { background: rgba(0, 210, 255, 0.1); padding: 2px 8px; border-radius: 10px; font-weight: bold; }
+
+        .osint-container { max-width: 700px; margin: 0 auto; }
+        .osint-input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .osint-input-group input { flex: 1; padding: 15px; border-radius: 8px; border: 1px solid var(--primary-cyan); background: rgba(0,0,0,0.3); color: white; font-size: 16px; outline: none; }
+        .osint-input-group button { padding: 0 25px; }
+        
+        .dossier { background: #0a0f1a; border: 1px solid var(--glass-border); border-radius: 10px; padding: 20px; position: relative; overflow: hidden; }
+        .dossier::before { content: 'CONFIDENTIAL'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 80px; font-weight: 900; color: rgba(255, 71, 87, 0.05); white-space: nowrap; pointer-events: none; z-index: 0; }
+        .dossier-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 15px; position: relative; z-index: 1; }
+        .dossier-title { font-size: 18px; font-weight: bold; color: var(--primary-cyan); }
+        .risk-badge { padding: 5px 15px; border-radius: 5px; font-weight: bold; font-size: 14px; text-transform: uppercase; }
+        .risk-low { background: rgba(46, 204, 113, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .risk-medium { background: rgba(241, 196, 15, 0.2); color: var(--warning); border: 1px solid var(--warning); }
+        .risk-high { background: rgba(255, 71, 87, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+        
+        .dossier-section { margin-bottom: 20px; position: relative; z-index: 1; }
+        .dossier-section h4 { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        
+        .osint-list { display: flex; flex-direction: column; gap: 8px; }
+        .osint-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+        .osint-item span.highlight { color: var(--primary-cyan); }
+        .osint-item span.danger { color: var(--danger); }
+        
+        .osint-scan-line { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--success); line-height: 1.8; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -291,6 +326,8 @@
             <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
             <nav class="nav-links" id="navLinks">
                 <a onclick="showMain(); toggleMenu()" id="nav-main" class="active">Главная</a>
+                <a onclick="showNews(); toggleMenu()" id="nav-news">📰 Новости</a>
+                <a onclick="showOsint(); toggleMenu()" id="nav-osint">🕵️ OSINT</a>
                 <a onclick="showTerminal(); toggleMenu()" id="nav-term">💻 Терминал</a>
                 <a onclick="showBlog(); toggleMenu()" id="nav-blog">Блог</a>
                 <a onclick="showCveFeed(); toggleMenu()" id="nav-cve">🚨 CVE</a>
@@ -351,6 +388,70 @@
                 </div>
             </div>
         </section>
+    </div>
+
+    <div id="osint-page" class="container section hidden" style="margin-top: 60px;">
+        <div class="section-header">
+            <h2>OSINT Симулятор</h2>
+            <p>Узнайте, как хакеры собирают информацию о вас из открытых источников (симуляция)</p>
+        </div>
+        <div class="osint-container">
+            <div class="osint-input-group">
+                <input type="text" id="osint-target" placeholder="Введите ваш Email или никнейм..." autocomplete="off">
+                <button class="btn btn-primary" onclick="startOsintScan()">Сканировать</button>
+            </div>
+            
+            <div id="osint-scanning" class="hidden">
+                <div class="dossier" style="background: #000; border-color: #333;">
+                    <div class="osint-scan-line" id="osint-terminal"></div>
+                </div>
+            </div>
+
+            <div id="osint-result" class="hidden">
+                <div class="dossier">
+                    <div class="dossier-header">
+                        <div>
+                            <div class="dossier-title">ДОСЬЕ: <span id="dossier-target" style="color: white;"></span></div>
+                            <div style="font-size: 12px; color: var(--text-muted); margin-top: 5px;">Отчет сгенерирован автоматически</div>
+                        </div>
+                        <div id="dossier-risk" class="risk-badge risk-low">Уровень риска: НИЗКИЙ</div>
+                    </div>
+
+                    <div class="dossier-section">
+                        <h4>Найденные аккаунты</h4>
+                        <div class="osint-list" id="dossier-accounts"></div>
+                    </div>
+
+                    <div class="dossier-section">
+                        <h4>Утечки данных</h4>
+                        <div class="osint-list" id="dossier-breaches"></div>
+                    </div>
+
+                    <div class="dossier-section" style="margin-bottom: 0;">
+                        <h4>Рекомендации по безопасности</h4>
+                        <div class="osint-list" id="dossier-recommendations"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="news-page" class="container section hidden" style="margin-top: 60px;">
+        <div class="section-header">
+            <h2>ИБ-Дайджест</h2>
+            <p>Свежие новости и аналитика из мира кибербезопасности</p>
+        </div>
+        <div class="news-tabs" id="news-tabs">
+            <div class="news-tab active" onclick="loadNewsFeed('securitylab', this)">SecurityLab</div>
+            <div class="news-tab" onclick="loadNewsFeed('opennet', this)">OpenNet</div>
+            <div class="news-tab" onclick="loadNewsFeed('bdu', this)">БДУ ФСТЭК</div>
+        </div>
+        <div class="news-list" id="news-list">
+            <p style="text-align: center; color: var(--text-muted);">Выберите источник для загрузки новостей...</p>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn btn-outline" onclick="loadNewsFeed(currentNewsSource, document.querySelector('.news-tab.active'))">🔄 Обновить</button>
+        </div>
     </div>
 
     <div id="terminal-page" class="container section hidden" style="margin-top: 60px;">
@@ -441,41 +542,35 @@
                 <div>Очки: <span id="score" style="color: var(--primary-cyan);">0</span></div>
                 <div>Жизни: <span id="lives" style="color: var(--danger);">🛡️🛡️🛡️</span></div>
             </div>
-            <canvas id="gameCanvas" width="800" height="500"></canvas>
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
             <div class="game-overlay" id="game-overlay">
                 <div id="game-start-screen">
-                    <h1 style="font-size: 22px; color: var(--primary-cyan);">Мишка: Щит Защиты</h1>
-                    <button class="btn btn-primary" id="startGameBtn" style="margin-top: 15px;">Начать</button>
+                    <h1 style="font-size: 28px; color: var(--primary-cyan); text-shadow: 0 0 10px rgba(0,210,255,0.5);">NEON BREACH</h1>
+                    <p style="color: var(--text-muted); margin: 10px 0 20px;">Управляйте антивирусным дроном. Стрельба автоматическая.<br>Просто уворачивайтесь от красных блоков!</p>
+                    <button class="btn btn-primary" id="startGameBtn" style="padding: 15px 40px; font-size: 16px;">Инициализация</button>
                 </div>
                 <div id="game-over-screen" class="hidden">
-                    <h1 style="color:var(--danger); font-size: 20px;">Периметр прорван</h1>
-                    <h2 id="final-score" style="color:var(--primary-cyan);font-size:32px;"></h2>
-                    <input type="text" id="pName" class="form-control" placeholder="Ваше имя" style="max-width:200px;margin:10px auto;">
-                    <button class="btn btn-primary" id="saveScoreBtn" style="width: 100%;">Сохранить</button>
-                    <button class="btn btn-outline" id="restartGameBtn" style="margin-top:10px; width: 100%;">Заново</button>
+                    <h1 style="color:var(--danger); font-size: 28px; text-shadow: 0 0 10px rgba(255,71,87,0.5);">СИСТЕМА ВЗЛОМАНА</h1>
+                    <h2 id="final-score" style="color:var(--primary-cyan);font-size:40px; margin: 10px 0;"></h2>
+                    <input type="text" id="pName" class="form-control" placeholder="Ваш позывной" style="max-width:200px;margin:10px auto;">
+                    <button class="btn btn-primary" id="saveScoreBtn" style="width: 100%; max-width: 200px;">Сохранить</button>
+                    <button class="btn btn-outline" id="restartGameBtn" style="margin-top:10px; width: 100%; max-width: 200px;">Перезапуск</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- СТРАНИЦА ПРОФИЛЯ / АВТОРИЗАЦИИ -->
     <div id="profile-page" class="container hidden" style="margin-top: 80px; padding-bottom: 50px;">
-        
-        <!-- Форма входа/регистрации -->
         <div id="auth-section" class="quiz-container" style="max-width: 400px;">
             <div class="auth-tabs">
                 <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Вход</div>
                 <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Регистрация</div>
             </div>
-            
-            <!-- Вход -->
             <div id="form-login">
                 <input type="email" id="login-email" class="form-control" placeholder="Email" style="margin-bottom: 10px;">
                 <input type="password" id="login-pass" class="form-control" placeholder="Пароль" style="margin-bottom: 20px;">
                 <button class="btn btn-primary" style="width: 100%;" onclick="login()">Войти</button>
             </div>
-
-            <!-- Регистрация (скрыта по умолчанию) -->
             <div id="form-register" class="hidden">
                 <input type="email" id="reg-email" class="form-control" placeholder="Email" style="margin-bottom: 10px;">
                 <input type="password" id="reg-pass" class="form-control" placeholder="Придумайте пароль" style="margin-bottom: 20px;">
@@ -483,7 +578,6 @@
             </div>
         </div>
 
-        <!-- Личный кабинет обычного пользователя -->
         <div id="user-dashboard" class="admin-panel hidden" style="max-width: 600px;">
             <h2 style="margin-bottom: 15px;">Личный кабинет</h2>
             <p style="color: var(--text-muted); margin-bottom: 20px;">Вы вошли как: <strong id="user-email-display" style="color: var(--primary-cyan);"></strong></p>
@@ -491,7 +585,6 @@
             <button class="btn btn-danger" style="width: 100%; margin-top: 20px;" onclick="logout()">Выйти из аккаунта</button>
         </div>
 
-        <!-- Панель администратора -->
         <div id="admin-dashboard" class="admin-panel hidden">
             <div class="admin-header" style="display: flex; justify-content: space-between; margin-bottom: 15px;">
                 <h2 style="font-size: 20px;">Управление статьями (Админ)</h2>
@@ -529,14 +622,22 @@
     </footer>
 
     <script>
+        // === РЕГИСТРАЦИЯ SERVICE WORKER (PWA) ===
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('PWA Service Worker зарегистрирован!', reg))
+                    .catch(err => console.log('Ошибка PWA:', err));
+            });
+        }
+
         const SUPABASE_URL = 'https://fzndxzyjkiucuqyezjgd.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_ELv-Qvq6Bm59oo9c9QO2WQ_nKp7xEbo';
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let loadedArticles = [];
 
-        // !!! ВАЖНО: Укажите здесь email вашего администратора !!!
-        const ADMIN_EMAIL = 'kasper@kiberbez.ru'; 
+        const ADMIN_EMAIL = 'admin@kiberbez.ru'; // <--- ЗАМЕНИТЕ НА ВАШ EMAIL
 
         function escapeHTML(str) {
             if (!str) return '';
@@ -564,7 +665,7 @@
         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
         if (!isTouchDevice) {
             document.addEventListener('mouseover', (e) => { 
-                if (e.target.closest('button, a, .quiz-option, .article-card, .nav-links a, .card')) {
+                if (e.target.closest('button, a, .quiz-option, .article-card, .nav-links a, .card, .news-item, .osint-item')) {
                     playBeep(1200, 'sine', 0.03); 
                 }
             });
@@ -591,7 +692,7 @@
             } catch (err) { showToast('Ошибка отправки.', 'error'); } finally { btn.innerText = 'Отправить заявку'; btn.disabled = false; }
         });
 
-        const pages = ['main', 'blog', 'map', 'quiz', 'game', 'leaderboard', 'profile', 'leak', 'phishing', 'article', 'terminal', 'cve'];
+        const pages = ['main', 'news', 'osint', 'blog', 'map', 'quiz', 'game', 'leaderboard', 'profile', 'leak', 'phishing', 'article', 'terminal', 'cve'];
         function hideAll() {
             pages.forEach(p => document.getElementById(`${p}-page`)?.classList.add('hidden'));
             document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
@@ -600,6 +701,8 @@
         }
         function toggleMenu() { document.getElementById('navLinks').classList.toggle('active'); }
         function showMain() { hideAll(); document.getElementById('main-page').classList.remove('hidden'); document.getElementById('nav-main').classList.add('active'); }
+        function showNews() { hideAll(); document.getElementById('news-page').classList.remove('hidden'); document.getElementById('nav-news').classList.add('active'); loadNewsFeed(currentNewsSource, document.querySelector('.news-tab.active')); }
+        function showOsint() { hideAll(); document.getElementById('osint-page').classList.remove('hidden'); document.getElementById('nav-osint').classList.add('active'); }
         function showTerminal() { hideAll(); document.getElementById('terminal-page').classList.remove('hidden'); document.getElementById('nav-term').classList.add('active'); setTimeout(() => document.getElementById('term-input').focus(), 100); }
         function showLeak() { hideAll(); document.getElementById('leak-page').classList.remove('hidden'); document.getElementById('nav-leak').classList.add('active'); }
         function showPhishing() { hideAll(); document.getElementById('phishing-page').classList.remove('hidden'); document.getElementById('nav-phish').classList.add('active'); initPhishing(); }
@@ -609,33 +712,167 @@
         function showLeaderboard() { hideAll(); document.getElementById('leaderboard-page').classList.remove('hidden'); document.getElementById('nav-leaderboard').classList.add('active'); loadLeaderboard(); }
         function showBlog() { hideAll(); document.getElementById('blog-page').classList.remove('hidden'); document.getElementById('nav-blog').classList.add('active'); loadBlog(); }
         function showCveFeed() { hideAll(); document.getElementById('cve-page').classList.remove('hidden'); document.getElementById('nav-cve').classList.add('active'); loadCveFeed(); }
-        
-        function showProfile() { 
-            hideAll(); 
-            document.getElementById('profile-page').classList.remove('hidden'); 
-            document.getElementById('nav-profile').classList.add('active'); 
-            checkUser(); 
+        function showProfile() { hideAll(); document.getElementById('profile-page').classList.remove('hidden'); document.getElementById('nav-profile').classList.add('active'); checkUser(); }
+
+        async function startOsintScan() {
+            const target = document.getElementById('osint-target').value.trim();
+            if (!target) return showToast('Введите Email или никнейм', 'error');
+
+            const scanningDiv = document.getElementById('osint-scanning');
+            const terminal = document.getElementById('osint-terminal');
+            const resultDiv = document.getElementById('osint-result');
+            
+            resultDiv.classList.add('hidden');
+            scanningDiv.classList.remove('hidden');
+            terminal.innerHTML = '';
+
+            const steps = [
+                `[>] Инициализация модуля сбора данных...`,
+                `[>] Поиск аккаунтов по базе SocialMedia...`,
+                `[>] Проверка базы утечек HaveIBeenPwned...`,
+                `[>] Анализ цифрового следа...`,
+                `[>] Генерация досье для: ${escapeHTML(target)}`
+            ];
+
+            for (let i = 0; i < steps.length; i++) {
+                await new Promise(r => setTimeout(r, 600));
+                terminal.innerHTML += steps[i] + '<br>';
+                terminal.scrollTop = terminal.scrollHeight;
+                playBeep(1000 + i*100, 'sine', 0.05);
+            }
+
+            await new Promise(r => setTimeout(r, 800));
+            scanningDiv.classList.add('hidden');
+            resultDiv.classList.remove('hidden');
+            
+            generateDossier(target);
         }
 
-        // === ЛОГИКА АВТОРИЗАЦИИ И ПРОФИЛЯ ===
+        function generateDossier(target) {
+            document.getElementById('dossier-target').innerText = target;
+
+            let hash = 0;
+            for (let i = 0; i < target.length; i++) { hash = ((hash << 5) - hash) + target.charCodeAt(i); hash |= 0; }
+            const seed = Math.abs(hash);
+
+            const platforms = ['GitHub', 'VK', 'Telegram', 'LinkedIn', 'Instagram', 'X (Twitter)', 'Steam'];
+            const breaches = [
+                { name: 'LinkedIn (2021)', data: 'Email, Пароль, Место работы' },
+                { name: 'Adobe (2013)', data: 'Email, Зашифрованный пароль' },
+                { name: 'Canva (2019)', data: 'Email, Имя, Хэш пароля' },
+                { name: 'Dropbox (2012)', data: 'Email, Пароль' },
+                { name: 'Collection #1 (2019)', data: 'Email, Пароли от разных сайтов' }
+            ];
+
+            const accountsList = document.getElementById('dossier-accounts');
+            accountsList.innerHTML = '';
+            const numAccounts = (seed % 3) + 2;
+            let riskScore = 0;
+
+            for (let i = 0; i < numAccounts; i++) {
+                const platform = platforms[(seed + i * 7) % platforms.length];
+                const year = 2010 + ((seed + i * 3) % 14);
+                accountsList.innerHTML += `<div class="osint-item"><span>${platform}</span><span class="highlight">Найден (с ${year} г.)</span></div>`;
+                riskScore += 10;
+            }
+
+            const breachesList = document.getElementById('dossier-breaches');
+            breachesList.innerHTML = '';
+            const numBreaches = (seed % 4);
+
+            if (numBreaches === 0) {
+                breachesList.innerHTML = `<div class="osint-item" style="justify-content: center; color: var(--success);">Утечек не обнаружено</div>`;
+            } else {
+                for (let i = 0; i < numBreaches; i++) {
+                    const b = breaches[(seed + i * 11) % breaches.length];
+                    breachesList.innerHTML += `<div class="osint-item"><span>${b.name}</span><span class="danger">${b.data}</span></div>`;
+                    riskScore += 25;
+                }
+            }
+
+            const riskBadge = document.getElementById('dossier-risk');
+            if (riskScore < 30) {
+                riskBadge.className = 'risk-badge risk-low';
+                riskBadge.innerText = 'Уровень риска: НИЗКИЙ';
+            } else if (riskScore < 60) {
+                riskBadge.className = 'risk-badge risk-medium';
+                riskBadge.innerText = 'Уровень риска: СРЕДНИЙ';
+            } else {
+                riskBadge.className = 'risk-badge risk-high';
+                riskBadge.innerText = 'Уровень риска: КРИТИЧЕСКИЙ';
+            }
+
+            const recList = document.getElementById('dossier-recommendations');
+            recList.innerHTML = '';
+            if (riskScore >= 30) {
+                recList.innerHTML += `<div class="osint-item">🔴 Срочно смените пароли во всех найденных сервисах.</div>`;
+                recList.innerHTML += `<div class="osint-item">🔴 Включите двухфакторную аутентификацию (2FA).</div>`;
+            }
+            if (numBreaches > 0) {
+                recList.innerHTML += `<div class="osint-item">🟡 Проверьте, не использовали ли вы одинаковые пароли.</div>`;
+            }
+            recList.innerHTML += `<div class="osint-item" style="color: var(--primary-cyan);">🟢 Используйте менеджер паролей для генерации уникальных связок.</div>`;
+            
+            playBeep(600, 'triangle', 0.2);
+        }
+
+        const newsSources = {
+            'securitylab': { name: 'SecurityLab', rss: 'https://www.securitylab.ru/_Services/Export/RSS/' },
+            'opennet': { name: 'OpenNet', rss: 'https://www.opennet.ru/opennews/opennews_sec.rss' },
+            'bdu': { name: 'БДУ ФСТЭК', rss: 'https://bdu.fstec.ru/ubi/vul/rss' }
+        };
+        let currentNewsSource = 'securitylab';
+
+        async function loadNewsFeed(sourceKey, tabElement) {
+            if (tabElement) {
+                document.querySelectorAll('.news-tab').forEach(t => t.classList.remove('active'));
+                tabElement.classList.add('active');
+            }
+            currentNewsSource = sourceKey;
+            const container = document.getElementById('news-list');
+            const source = newsSources[sourceKey];
+            
+            const cacheKey = `kiberbez_news_${sourceKey}`;
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+                try { const { timestamp, data } = JSON.parse(cached); if (Date.now() - timestamp < 1000 * 60 * 5) { renderNews(data, source.name); return; } } catch (e) {}
+            }
+
+            container.innerHTML = `<p style="text-align: center; color: var(--text-muted);">Загрузка новостей из ${source.name}...</p>`;
+
+            try {
+                const encodedUrl = encodeURIComponent(source.rss);
+                const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodedUrl}`);
+                const data = await res.json();
+                if (data.status !== 'ok') throw new Error(data.message || 'Ошибка парсинга RSS');
+                localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data: data.items }));
+                renderNews(data.items, source.name);
+            } catch (error) {
+                container.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--danger);"><p>Не удалось загрузить новости.</p><button class="btn btn-outline" onclick="loadNewsFeed('${sourceKey}', document.querySelector('.news-tab.active'))" style="margin-top: 10px;">Повторить</button></div>`;
+            }
+        }
+
+        function renderNews(items, sourceName) {
+            const container = document.getElementById('news-list');
+            if (!items || items.length === 0) { container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Новостей пока нет.</p>'; return; }
+            container.innerHTML = items.map(item => {
+                const date = item.pubDate ? new Date(item.pubDate).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Дата неизвестна';
+                const tempDiv = document.createElement('div'); tempDiv.innerHTML = item.description || ''; const cleanDesc = tempDiv.textContent || tempDiv.innerText || '';
+                return `<div class="news-item"><a href="${escapeHTML(item.link)}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;"><div class="news-title">${escapeHTML(item.title)}</div><div class="news-desc">${escapeHTML(cleanDesc)}</div></a><div class="news-footer"><span class="news-source">${escapeHTML(sourceName)}</span><span>${date}</span></div></div>`;
+            }).join('');
+        }
+
         function switchAuthTab(tab) {
             document.getElementById('tab-login').classList.remove('active');
             document.getElementById('tab-register').classList.remove('active');
             document.getElementById('form-login').classList.add('hidden');
             document.getElementById('form-register').classList.add('hidden');
-            
-            if (tab === 'login') {
-                document.getElementById('tab-login').classList.add('active');
-                document.getElementById('form-login').classList.remove('hidden');
-            } else {
-                document.getElementById('tab-register').classList.add('active');
-                document.getElementById('form-register').classList.remove('hidden');
-            }
+            if (tab === 'login') { document.getElementById('tab-login').classList.add('active'); document.getElementById('form-login').classList.remove('hidden'); } 
+            else { document.getElementById('tab-register').classList.add('active'); document.getElementById('form-register').classList.remove('hidden'); }
         }
 
         async function checkUser() {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            
             const authSection = document.getElementById('auth-section');
             const userDashboard = document.getElementById('user-dashboard');
             const adminDashboard = document.getElementById('admin-dashboard');
@@ -644,67 +881,40 @@
             if (user) {
                 authSection.classList.add('hidden');
                 navProfile.innerText = '👤 Профиль';
-                
                 if (user.email === ADMIN_EMAIL) {
-                    // Это Админ
-                    userDashboard.classList.add('hidden');
-                    adminDashboard.classList.remove('hidden');
-                    loadAdminArticles();
+                    userDashboard.classList.add('hidden'); adminDashboard.classList.remove('hidden'); loadAdminArticles();
                 } else {
-                    // Это обычный пользователь
-                    adminDashboard.classList.add('hidden');
-                    userDashboard.classList.remove('hidden');
+                    adminDashboard.classList.add('hidden'); userDashboard.classList.remove('hidden');
                     document.getElementById('user-email-display').innerText = user.email;
                 }
             } else {
-                // Не авторизован
-                authSection.classList.remove('hidden');
-                userDashboard.classList.add('hidden');
-                adminDashboard.classList.add('hidden');
-                navProfile.innerText = '👤 Вход';
+                authSection.classList.remove('hidden'); userDashboard.classList.add('hidden'); adminDashboard.classList.add('hidden'); navProfile.innerText = '👤 Вход';
             }
         }
 
         async function login() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-pass').value;
-            
             if(!email || !password) return showToast('Заполните все поля', 'error');
-
             const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) {
-                showToast('Ошибка входа: ' + error.message, 'error');
-            } else {
-                showToast('Успешный вход!', 'success'); 
-                checkUser(); 
-            }
+            if (error) showToast('Ошибка входа: ' + error.message, 'error');
+            else { showToast('Успешный вход!', 'success'); checkUser(); }
         }
 
         async function register() {
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-pass').value;
-            
             if(!email || password.length < 6) return showToast('Пароль должен быть не менее 6 символов', 'error');
-
-            const { data, error } = await supabaseClient.auth.signUp({ email, password });
-            
-            if (error) {
-                showToast('Ошибка регистрации: ' + error.message, 'error');
-            } else {
-                showToast('Регистрация успешна! Проверьте почту или войдите.', 'success');
-                switchAuthTab('login');
-                document.getElementById('login-email').value = email;
-            }
+            const { error } = await supabaseClient.auth.signUp({ email, password });
+            if (error) showToast('Ошибка регистрации: ' + error.message, 'error');
+            else { showToast('Регистрация успешна! Войдите.', 'success'); switchAuthTab('login'); document.getElementById('login-email').value = email; }
         }
 
         async function logout() {
             await supabaseClient.auth.signOut();
-            showToast('Вы вышли из аккаунта', 'success');
-            checkUser();
-            showMain();
+            showToast('Вы вышли из аккаунта', 'success'); checkUser(); showMain();
         }
 
-        // === ОСТАЛЬНОЙ ФУНКЦИОНАЛ ===
         const termInput = document.getElementById('term-input');
         const termOutput = document.getElementById('term-output');
         
@@ -717,9 +927,7 @@
         termInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const cmd = termInput.value.trim().toLowerCase();
-                termOutput.innerHTML += `<span style="color:#fff">root@kiberbez:~#</span> ${escapeHTML(cmd)}<br>`;
-                termInput.value = '';
-                
+                termOutput.innerHTML += `<span style="color:#fff">root@kiberbez:~#</span> ${escapeHTML(cmd)}<br>`; termInput.value = '';
                 if (cmd === 'clear') termOutput.innerHTML = '';
                 else if (cmd === 'matrix') { toggleHackerMode(); termOutput.innerHTML += `> Матрица переключена.<br><br>`; }
                 else if (cmd === 'scan') {
@@ -739,424 +947,204 @@
         });
 
         setInterval(() => {
-            const defconEl = document.getElementById('defcon-level');
-            if(!defconEl) return;
+            const defconEl = document.getElementById('defcon-level'); if(!defconEl) return;
             const levels = [ {lvl: 5, cls: 'defcon-5', txt: 'DEFCON 5'}, {lvl: 4, cls: 'defcon-5', txt: 'DEFCON 4'}, {lvl: 3, cls: 'defcon-3', txt: 'DEFCON 3'}, {lvl: 2, cls: 'defcon-3', txt: 'DEFCON 2'}, {lvl: 1, cls: 'defcon-1', txt: 'DEFCON 1'} ];
-            const rand = Math.random();
-            let idx = 0;
+            const rand = Math.random(); let idx = 0;
             if(rand > 0.9) idx = 4; else if(rand > 0.7) idx = 2; else if(rand > 0.4) idx = 1;
-            const lvl = levels[idx];
-            defconEl.className = `defcon-badge ${lvl.cls}`;
-            defconEl.innerText = lvl.txt;
-            if (lvl.lvl === 1) document.body.classList.add('global-alert');
-            else document.body.classList.remove('global-alert');
+            const lvl = levels[idx]; defconEl.className = `defcon-badge ${lvl.cls}`; defconEl.innerText = lvl.txt;
+            if (lvl.lvl === 1) document.body.classList.add('global-alert'); else document.body.classList.remove('global-alert');
         }, 8000);
 
         if (!isTouchDevice) {
-            const cursorDot = document.getElementById('cursor-dot');
-            const cursorOutline = document.getElementById('cursor-outline');
+            const cursorDot = document.getElementById('cursor-dot'); const cursorOutline = document.getElementById('cursor-outline');
             let mouseX = 0, mouseY = 0, outlineX = 0, outlineY = 0;
-            
             window.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX; mouseY = e.clientY;
-                cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
-                
+                mouseX = e.clientX; mouseY = e.clientY; cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
                 if (!document.getElementById('main-page').classList.contains('hidden')) {
-                    const text = document.getElementById('parallax-text');
-                    const img = document.getElementById('parallax-image');
-                    if(text && img) {
-                        text.style.transform = `translate(${(window.innerWidth/2 - mouseX)/50}px, ${(window.innerHeight/2 - mouseY)/50}px)`;
-                        img.style.transform = `translate(${-(window.innerWidth/2 - mouseX)/25}px, ${-(window.innerHeight/2 - mouseY)/25}px)`;
-                    }
+                    const text = document.getElementById('parallax-text'); const img = document.getElementById('parallax-image');
+                    if(text && img) { text.style.transform = `translate(${(window.innerWidth/2 - mouseX)/50}px, ${(window.innerHeight/2 - mouseY)/50}px)`; img.style.transform = `translate(${-(window.innerWidth/2 - mouseX)/25}px, ${-(window.innerHeight/2 - mouseY)/25}px)`; }
                 }
             });
-
-            function animateCursor() {
-                outlineX += (mouseX - outlineX) * 0.2; 
-                outlineY += (mouseY - outlineY) * 0.2;
-                cursorOutline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0) translate(-50%, -50%)`;
-                requestAnimationFrame(animateCursor);
-            }
+            function animateCursor() { outlineX += (mouseX - outlineX) * 0.2; outlineY += (mouseY - outlineY) * 0.2; cursorOutline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0) translate(-50%, -50%)`; requestAnimationFrame(animateCursor); }
             animateCursor();
-
-            document.addEventListener('mouseover', (e) => {
-                if (e.target.closest('button, a, .quiz-option, .article-card, .card')) {
-                    cursorOutline.classList.add('hovering');
-                } else {
-                    cursorOutline.classList.remove('hovering');
-                }
-            });
-
-            document.addEventListener('mousedown', () => cursorOutline.classList.add('clicking'));
-            document.addEventListener('mouseup', () => cursorOutline.classList.remove('clicking'));
+            document.addEventListener('mouseover', (e) => { if (e.target.closest('button, a, .quiz-option, .article-card, .card, .news-item, .osint-item')) cursorOutline.classList.add('hovering'); else cursorOutline.classList.remove('hovering'); });
+            document.addEventListener('mousedown', () => cursorOutline.classList.add('clicking')); document.addEventListener('mouseup', () => cursorOutline.classList.remove('clicking'));
         }
 
         function startLeakScan() {
-            const email = document.getElementById('leak-email').value;
-            const out = document.getElementById('terminal-output');
+            const email = document.getElementById('leak-email').value; const out = document.getElementById('terminal-output');
             if(!email.includes('@')) return showToast('Введите email', 'error');
-            document.getElementById('leak-input-group').classList.add('hidden');
-            out.innerHTML = `root@kiberbez:~# target: ${escapeHTML(email)}<br>> Подключение...`;
-            setTimeout(() => {
-                out.innerHTML += `<br>> Анализ: 100%`;
-                setTimeout(() => {
-                    const hacked = Math.random() > 0.5;
-                    if(hacked) out.innerHTML += `<br><span style="color: #ff4757;">[!!!] Email найден в 3 базах!</span><br>> Смените пароль.`;
-                    else out.innerHTML += `<br><span style="color: #2ecc71;">[OK] Совпадений не найдено.</span>`;
-                    out.innerHTML += `<br><br>> <button class="btn btn-primary" onclick="openLeadModal()" style="font-size: 12px; padding: 5px 10px;">Получить аудит</button>`;
-                }, 1000);
-            }, 1500);
+            document.getElementById('leak-input-group').classList.add('hidden'); out.innerHTML = `root@kiberbez:~# target: ${escapeHTML(email)}<br>> Подключение...`;
+            setTimeout(() => { out.innerHTML += `<br>> Анализ: 100%`; setTimeout(() => { const hacked = Math.random() > 0.5; if(hacked) out.innerHTML += `<br><span style="color: #ff4757;">[!!!] Email найден в 3 базах!</span><br>> Смените пароль.`; else out.innerHTML += `<br><span style="color: #2ecc71;">[OK] Совпадений не найдено.</span>`; out.innerHTML += `<br><br>> <button class="btn btn-primary" onclick="openLeadModal()" style="font-size: 12px; padding: 5px 10px;">Получить аудит</button>`; }, 1000); }, 1500);
         }
 
-        const phishingData = [
-            { sender: "support@paypal-secure-update.com", subject: "Срочно! Аккаунт заблокирован", body: "Подтвердите данные по ссылке.", isPhishing: true, reason: "Поддельный домен." },
-            { sender: "hr@yourcompany.ru", subject: "Расписание встреч", body: "Привет! Во вложении расписание.", isPhishing: false, reason: "Обычное письмо." },
-            { sender: "security@sberbank.ru", subject: "Отмена перевода", body: "Перейдите по ссылке http://sberbank-online.xyz", isPhishing: true, reason: "Домен .xyz." }
-        ];
+        const phishingData = [ { sender: "support@paypal-secure-update.com", subject: "Срочно! Аккаунт заблокирован", body: "Подтвердите данные по ссылке.", isPhishing: true, reason: "Поддельный домен." }, { sender: "hr@yourcompany.ru", subject: "Расписание встреч", body: "Привет! Во вложении расписание.", isPhishing: false, reason: "Обычное письмо." }, { sender: "security@sberbank.ru", subject: "Отмена перевода", body: "Перейдите по ссылке http://sberbank-online.xyz", isPhishing: true, reason: "Домен .xyz." } ];
         let currentPhish = 0;
         function initPhishing() { currentPhish = 0; renderPhishing(); }
         function renderPhishing() {
             const card = document.getElementById('phishing-card');
-            if (currentPhish >= phishingData.length) {
-                card.innerHTML = `<div style="padding: 20px; text-align: center;"><h2 style="color: var(--success); font-size: 20px;">Тест пройден!</h2><button class="btn btn-primary" onclick="initPhishing()" style="margin-top: 15px; width: 100%;">Еще раз</button></div>`;
-                return;
-            }
+            if (currentPhish >= phishingData.length) { card.innerHTML = `<div style="padding: 20px; text-align: center;"><h2 style="color: var(--success); font-size: 20px;">Тест пройден!</h2><button class="btn btn-primary" onclick="initPhishing()" style="margin-top: 15px; width: 100%;">Еще раз</button></div>`; return; }
             const d = phishingData[currentPhish];
-            card.innerHTML = `
-                <div class="email-header"><div><b>От:</b> ${escapeHTML(d.sender)}</div><div><b>Тема:</b> ${escapeHTML(d.subject)}</div></div>
-                <div class="email-body">${escapeHTML(d.body)}</div>
-                <div class="phishing-actions">
-                    <button class="btn btn-danger" onclick="checkPhishing(true)">🚨 Фишинг!</button>
-                    <button class="btn btn-primary" onclick="checkPhishing(false)">✅ Настоящее</button>
-                </div>
-                <div class="phishing-result" id="phish-result"></div>
-            `;
+            card.innerHTML = `<div class="email-header"><div><b>От:</b> ${escapeHTML(d.sender)}</div><div><b>Тема:</b> ${escapeHTML(d.subject)}</div></div><div class="email-body">${escapeHTML(d.body)}</div><div class="phishing-actions"><button class="btn btn-danger" onclick="checkPhishing(true)">🚨 Фишинг!</button><button class="btn btn-primary" onclick="checkPhishing(false)">✅ Настоящее</button></div><div class="phishing-result" id="phish-result"></div>`;
         }
         function checkPhishing(choice) {
-            const d = phishingData[currentPhish];
-            const res = document.getElementById('phish-result');
-            res.style.display = 'block';
+            const d = phishingData[currentPhish]; const res = document.getElementById('phish-result'); res.style.display = 'block';
             res.innerHTML = `<div style="font-size: 16px; color: ${choice === d.isPhishing ? 'var(--success)' : 'var(--danger)'};">${choice === d.isPhishing ? '✅ Верно!' : '❌ Ошибка!'}</div><p style="font-size: 13px; margin-top: 10px;">${escapeHTML(d.reason)}</p><button class="btn btn-outline" style="margin-top: 15px; width: 100%;" onclick="currentPhish++; renderPhishing()">Далее →</button>`;
             document.querySelector('.phishing-actions').style.display = 'none';
         }
 
-        const quizData = [
-            { q: "Используете 2FA?", opts: ["Везде", "Иногда", "Нет"], sc: [20, 10, 0] },
-            { q: "Где храните пароли?", opts: ["Менеджер", "Блокнот", "Одинаковые"], sc: [20, 10, 0] },
-            { q: "Знаете про фишинг?", opts: ["Да", "Слышал", "Нет"], sc: [20, 10, 0] }
-        ];
+        const quizData = [ { q: "Используете 2FA?", opts: ["Везде", "Иногда", "Нет"], sc: [20, 10, 0] }, { q: "Где храните пароли?", opts: ["Менеджер", "Блокнот", "Одинаковые"], sc: [20, 10, 0] }, { q: "Знаете про фишинг?", opts: ["Да", "Слышал", "Нет"], sc: [20, 10, 0] } ];
         let currQ = 0, qScore = 0;
         function initQuiz() { currQ = 0; qScore = 0; renderQuiz(); }
         function renderQuiz() {
             const c = document.getElementById('quiz-container');
-            if(currQ >= quizData.length) {
-                c.innerHTML = `<h2 style="text-align: center; color: var(--success); font-size: 20px;">Результат: ${qScore}%</h2><button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="showMain()">На главную</button>`;
-                return;
-            }
+            if(currQ >= quizData.length) { c.innerHTML = `<h2 style="text-align: center; color: var(--success); font-size: 20px;">Результат: ${qScore}%</h2><button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="showMain()">На главную</button>`; return; }
             const q = quizData[currQ];
             c.innerHTML = `<div style="margin-bottom: 15px; font-size: 15px;">${escapeHTML(q.q)}</div>${q.opts.map((o,i) => `<div class="quiz-option" onclick="qScore+=${q.sc[i]}; currQ++; renderQuiz()">${escapeHTML(o)}</div>`).join('')}`;
         }
 
-        let threatMap = null;
-        let mapLayer = null;
-
+        let threatMap = null; let mapLayer = null;
         function initMap() {
-            const mapContainer = document.getElementById('threatMap');
-            if (!mapContainer) return;
-
-            if (!threatMap) {
-                threatMap = L.map('threatMap', {
-                    zoomControl: false,
-                    attributionControl: false
-                }).setView([20, 0], 2);
-
-                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-                    maxZoom: 16
-                }).addTo(threatMap);
-
-                mapLayer = L.layerGroup().addTo(threatMap);
-            }
-
+            const mapContainer = document.getElementById('threatMap'); if (!mapContainer) return;
+            if (!threatMap) { threatMap = L.map('threatMap', { zoomControl: false, attributionControl: false }).setView([20, 0], 2); L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 16 }).addTo(threatMap); mapLayer = L.layerGroup().addTo(threatMap); }
             mapLayer.clearLayers();
-
             function launchAttack() {
-                const latlngs = [
-                    [Math.random() * 80 - 40, Math.random() * 360 - 180],
-                    [Math.random() * 80 - 40, Math.random() * 360 - 180]
-                ];
-
-                const polyline = L.polyline(latlngs, {
-                    color: Math.random() > 0.3 ? '#ff4757' : '#00d2ff',
-                    weight: 2,
-                    opacity: 0.8,
-                    dashArray: '5, 10',
-                    className: 'attack-line'
-                }).addTo(mapLayer);
-
-                const targetMarker = L.circleMarker(latlngs[1], {
-                    radius: 4,
-                    color: '#ff4757',
-                    fillColor: '#ff4757',
-                    fillOpacity: 1,
-                    className: 'pulse-marker'
-                }).addTo(mapLayer);
-
-                setTimeout(() => {
-                    if (mapLayer.hasLayer(polyline)) mapLayer.removeLayer(polyline);
-                    if (mapLayer.hasLayer(targetMarker)) mapLayer.removeLayer(targetMarker);
-                }, 2000);
+                const latlngs = [ [Math.random() * 80 - 40, Math.random() * 360 - 180], [Math.random() * 80 - 40, Math.random() * 360 - 180] ];
+                const polyline = L.polyline(latlngs, { color: Math.random() > 0.3 ? '#ff4757' : '#00d2ff', weight: 2, opacity: 0.8, dashArray: '5, 10', className: 'attack-line' }).addTo(mapLayer);
+                const targetMarker = L.circleMarker(latlngs[1], { radius: 4, color: '#ff4757', fillColor: '#ff4757', fillOpacity: 1, className: 'pulse-marker' }).addTo(mapLayer);
+                setTimeout(() => { if (mapLayer.hasLayer(polyline)) mapLayer.removeLayer(polyline); if (mapLayer.hasLayer(targetMarker)) mapLayer.removeLayer(targetMarker); }, 2000);
             }
-
-            if (window.threatMapInterval) clearInterval(window.threatMapInterval);
-            window.threatMapInterval = setInterval(launchAttack, 400);
-            
-            setTimeout(() => { threatMap.invalidateSize(); }, 200);
+            if (window.threatMapInterval) clearInterval(window.threatMapInterval); window.threatMapInterval = setInterval(launchAttack, 400); setTimeout(() => { threatMap.invalidateSize(); }, 200);
         }
 
         let matrixInt;
         function toggleHackerMode() {
-            document.body.classList.toggle('hacker-mode');
-            const canvas = document.getElementById('matrix-canvas'); const ctx = canvas.getContext('2d');
+            document.body.classList.toggle('hacker-mode'); const canvas = document.getElementById('matrix-canvas'); const ctx = canvas.getContext('2d');
             if (document.body.classList.contains('hacker-mode')) {
                 canvas.width = window.innerWidth; canvas.height = window.innerHeight;
                 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()"; const drops = Array(Math.floor(canvas.width/16)).fill(1);
-                matrixInt = setInterval(() => {
-                    ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle = "#0F0"; ctx.font = "16px monospace";
-                    drops.forEach((y, i) => { ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*16, y*16); if(y*16 > canvas.height && Math.random() > 0.975) drops[i]=0; drops[i]++; });
-                }, 50);
+                matrixInt = setInterval(() => { ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle = "#0F0"; ctx.font = "16px monospace"; drops.forEach((y, i) => { ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*16, y*16); if(y*16 > canvas.height && Math.random() > 0.975) drops[i]=0; drops[i]++; }); }, 50);
             } else { clearInterval(matrixInt); ctx.clearRect(0,0,canvas.width,canvas.height); }
         }
 
         async function loadBlog() {
-            const container = document.getElementById('blog-container');
-            container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Загрузка...</p>';
+            const container = document.getElementById('blog-container'); container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Загрузка...</p>';
             const { data, error } = await supabaseClient.from('articles').select('*').order('created_at', { ascending: false });
             if (error) { container.innerHTML = '<p style="color: var(--danger); text-align: center;">Ошибка загрузки статей.</p>'; return; }
-            loadedArticles = data || [];
-            filterBlog();
+            loadedArticles = data || []; filterBlog();
         }
         function filterBlog() {
-            const query = document.getElementById('blog-search').value.toLowerCase();
-            const container = document.getElementById('blog-container');
-            const filtered = loadedArticles.filter(a => 
-                a.title.toLowerCase().includes(query) || a.content.toLowerCase().includes(query) || (a.tags && a.tags.toLowerCase().includes(query))
-            );
+            const query = document.getElementById('blog-search').value.toLowerCase(); const container = document.getElementById('blog-container');
+            const filtered = loadedArticles.filter(a => a.title.toLowerCase().includes(query) || a.content.toLowerCase().includes(query) || (a.tags && a.tags.toLowerCase().includes(query)));
             if (filtered.length === 0) { container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Ничего не найдено.</p>'; return; }
             container.innerHTML = filtered.map(art => {
-                const date = new Date(art.created_at).toLocaleDateString('ru-RU');
-                const readTime = Math.ceil(art.content.split(' ').length / 180) || 1;
-                let cover = art.emoji || '📄';
-                if (cover.startsWith('http')) cover = `<img src="${escapeHTML(cover)}">`;
-                else cover = escapeHTML(cover);
-                
-                let tags = '';
-                if(art.tags) tags = `<div class="article-tags" style="display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px;">${art.tags.split(',').map(t => `<span style="background: rgba(0, 210, 255, 0.1); color: var(--primary-cyan); padding: 2px 8px; border-radius: 10px; font-size: 10px;">#${escapeHTML(t.trim())}</span>`).join('')}</div>`;
-                
-                return `<div class="article-card" onclick="readArticle('${art.id}')">
-                    <div class="article-img-box">${cover}</div>
-                    <div class="article-content">
-                        <div class="article-meta"><span>${date}</span><span>⏱ ${readTime} мин</span></div>
-                        <h3 class="article-title">${escapeHTML(art.title)}</h3>${tags}
-                        <p class="article-excerpt">${escapeHTML(art.content)}</p>
-                    </div></div>`;
+                const date = new Date(art.created_at).toLocaleDateString('ru-RU'); const readTime = Math.ceil(art.content.split(' ').length / 180) || 1; let cover = art.emoji || '📄';
+                if (cover.startsWith('http')) cover = `<img src="${escapeHTML(cover)}">`; else cover = escapeHTML(cover);
+                let tags = ''; if(art.tags) tags = `<div class="article-tags" style="display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px;">${art.tags.split(',').map(t => `<span style="background: rgba(0, 210, 255, 0.1); color: var(--primary-cyan); padding: 2px 8px; border-radius: 10px; font-size: 10px;">#${escapeHTML(t.trim())}</span>`).join('')}</div>`;
+                return `<div class="article-card" onclick="readArticle('${art.id}')"><div class="article-img-box">${cover}</div><div class="article-content"><div class="article-meta"><span>${date}</span><span>⏱ ${readTime} мин</span></div><h3 class="article-title">${escapeHTML(art.title)}</h3>${tags}<p class="article-excerpt">${escapeHTML(art.content)}</p></div></div>`;
             }).join('');
         }
         function readArticle(id) {
             const art = loadedArticles.find(a => a.id === id); if(!art) return;
-            hideAll();
-            document.getElementById('article-page').classList.remove('hidden');
-            document.getElementById('view-title').innerText = art.title;
-            const date = new Date(art.created_at).toLocaleDateString('ru-RU');
-            const readTime = Math.ceil(art.content.split(' ').length / 180) || 1;
-            document.getElementById('view-meta').innerText = `${date} • ⏱ ${readTime} мин`;
-            document.getElementById('view-content').innerText = art.content;
-            window.scrollTo(0, 0);
+            hideAll(); document.getElementById('article-page').classList.remove('hidden');
+            document.getElementById('view-title').innerText = art.title; const date = new Date(art.created_at).toLocaleDateString('ru-RU'); const readTime = Math.ceil(art.content.split(' ').length / 180) || 1;
+            document.getElementById('view-meta').innerText = `${date} • ⏱ ${readTime} мин`; document.getElementById('view-content').innerText = art.content; window.scrollTo(0, 0);
         }
 
         async function loadAdminArticles() {
-            const tbody = document.getElementById('admin-table-body');
-            const { data } = await supabaseClient.from('articles').select('*').order('created_at', { ascending: false });
-            loadedArticles = data || [];
-            tbody.innerHTML = loadedArticles.map(art => `
-                <tr><td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(art.title)}</td><td>${new Date(art.created_at).toLocaleDateString('ru-RU')}</td>
-                <td><button class="btn btn-outline btn-sm" onclick="editArticle('${art.id}')" style="margin-bottom:5px;">Ред.</button> <button class="btn btn-danger btn-sm" onclick="deleteArticle('${art.id}')">Удал.</button></td></tr>
-            `).join('');
+            const tbody = document.getElementById('admin-table-body'); const { data } = await supabaseClient.from('articles').select('*').order('created_at', { ascending: false });
+            loadedArticles = data || []; tbody.innerHTML = loadedArticles.map(art => `<tr><td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(art.title)}</td><td>${new Date(art.created_at).toLocaleDateString('ru-RU')}</td><td><button class="btn btn-outline btn-sm" onclick="editArticle('${art.id}')" style="margin-bottom:5px;">Ред.</button> <button class="btn btn-danger btn-sm" onclick="deleteArticle('${art.id}')">Удал.</button></td></tr>`).join('');
         }
-        function toggleEditor() {
-            const ed = document.getElementById('editor-section');
-            ed.classList.toggle('hidden');
-            if(ed.classList.contains('hidden')) {
-                document.getElementById('edit-id').value = '';
-                document.getElementById('art-title').value = '';
-                document.getElementById('art-emoji').value = '';
-                document.getElementById('art-tags').value = '';
-                document.getElementById('art-content').value = '';
-            }
-        }
+        function toggleEditor() { const ed = document.getElementById('editor-section'); ed.classList.toggle('hidden'); if(ed.classList.contains('hidden')) { document.getElementById('edit-id').value = ''; document.getElementById('art-title').value = ''; document.getElementById('art-emoji').value = ''; document.getElementById('art-tags').value = ''; document.getElementById('art-content').value = ''; } }
         async function saveArticle() {
-            const id = document.getElementById('edit-id').value;
-            const payload = {
-                title: document.getElementById('art-title').value.trim(),
-                emoji: document.getElementById('art-emoji').value.trim() || '📄',
-                tags: document.getElementById('art-tags').value.trim(),
-                content: document.getElementById('art-content').value.trim()
-            };
-            if(!payload.title || !payload.content) { showToast('Заполните поля!', 'error'); return; }
-            const btn = document.getElementById('save-btn'); btn.innerText = '...';
-            if(id) await supabaseClient.from('articles').update(payload).eq('id', id);
-            else await supabaseClient.from('articles').insert([payload]);
-            btn.innerText = 'Сохранить';
-            toggleEditor(); loadAdminArticles();
-            showToast('Статья сохранена', 'success');
+            const id = document.getElementById('edit-id').value; const payload = { title: document.getElementById('art-title').value.trim(), emoji: document.getElementById('art-emoji').value.trim() || '📄', tags: document.getElementById('art-tags').value.trim(), content: document.getElementById('art-content').value.trim() };
+            if(!payload.title || !payload.content) { showToast('Заполните поля!', 'error'); return; } const btn = document.getElementById('save-btn'); btn.innerText = '...';
+            if(id) await supabaseClient.from('articles').update(payload).eq('id', id); else await supabaseClient.from('articles').insert([payload]);
+            btn.innerText = 'Сохранить'; toggleEditor(); loadAdminArticles(); showToast('Статья сохранена', 'success');
         }
-        function editArticle(id) {
-            const art = loadedArticles.find(a => a.id === id); if(!art) return;
-            document.getElementById('edit-id').value = art.id;
-            document.getElementById('art-title').value = art.title;
-            document.getElementById('art-emoji').value = art.emoji || '';
-            document.getElementById('art-tags').value = art.tags || '';
-            document.getElementById('art-content').value = art.content;
-            document.getElementById('editor-section').classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
-        async function deleteArticle(id) {
-            if(!confirm('Удалить?')) return;
-            await supabaseClient.from('articles').delete().eq('id', id);
-            loadAdminArticles();
-            showToast('Удалено', 'success');
-        }
+        function editArticle(id) { const art = loadedArticles.find(a => a.id === id); if(!art) return; document.getElementById('edit-id').value = art.id; document.getElementById('art-title').value = art.title; document.getElementById('art-emoji').value = art.emoji || ''; document.getElementById('art-tags').value = art.tags || ''; document.getElementById('art-content').value = art.content; document.getElementById('editor-section').classList.remove('hidden'); window.scrollTo(0, 0); }
+        async function deleteArticle(id) { if(!confirm('Удалить?')) return; await supabaseClient.from('articles').delete().eq('id', id); loadAdminArticles(); showToast('Удалено', 'success'); }
 
-        const CVE_CACHE_KEY = 'kiberbez_cve_cache';
-        const CVE_CACHE_TTL = 1000 * 60 * 60;
+        const CVE_CACHE_KEY = 'kiberbez_cve_cache'; const CVE_CACHE_TTL = 1000 * 60 * 60;
         async function loadCveFeed(forceReload = false) {
             const container = document.getElementById('cve-list');
-            if (!forceReload) {
-                const cached = localStorage.getItem(CVE_CACHE_KEY);
-                if (cached) {
-                    try {
-                        const { timestamp, data } = JSON.parse(cached);
-                        if (Date.now() - timestamp < CVE_CACHE_TTL) { renderCveList(data); return; }
-                    } catch (e) {}
-                }
-            }
+            if (!forceReload) { const cached = localStorage.getItem(CVE_CACHE_KEY); if (cached) { try { const { timestamp, data } = JSON.parse(cached); if (Date.now() - timestamp < CVE_CACHE_TTL) { renderCveList(data); return; } } catch (e) {} } }
             container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Загрузка...</p>';
-            try {
-                const res = await fetch('https://cve.circl.lu/api/last/15');
-                if (!res.ok) throw new Error();
-                const data = await res.json();
-                localStorage.setItem(CVE_CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: data }));
-                renderCveList(data);
-            } catch (error) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: var(--text-muted);">
-                        <p>Не удалось загрузить ленту CVE.</p>
-                        <button class="btn btn-outline" onclick="loadCveFeed(true)" style="margin-top: 10px;">Повторить</button>
-                    </div>`;
-            }
+            try { const res = await fetch('https://cve.circl.lu/api/last/15'); if (!res.ok) throw new Error(); const data = await res.json(); localStorage.setItem(CVE_CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: data })); renderCveList(data); } catch (error) { container.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--text-muted);"><p>Не удалось загрузить ленту CVE.</p><button class="btn btn-outline" onclick="loadCveFeed(true)" style="margin-top: 10px;">Повторить</button></div>`; }
         }
         function renderCveList(data) {
-            const container = document.getElementById('cve-list');
-            if (!data || !data.length) { container.innerHTML = '<p style="text-align: center;">Нет данных.</p>'; return; }
+            const container = document.getElementById('cve-list'); if (!data || !data.length) { container.innerHTML = '<p style="text-align: center;">Нет данных.</p>'; return; }
             container.innerHTML = data.map(item => {
-                const rawId = item.id || item.cve_id || 'CVE-UNKNOWN';
-                const id = escapeHTML(rawId);
-                const summary = escapeHTML(item.summary || item.details || 'Описание отсутствует.');
-                const published = item.published ? new Date(item.published).toLocaleDateString('ru-RU') : '—';
-                let cvss = null;
-                if (typeof item.cvss === 'number') cvss = item.cvss;
-                else if (item.cvssScore) cvss = item.cvssScore;
-                else if (item.cvssv3) cvss = item.cvssv3;
-                else if (item.metrics?.cvssMetricV31?.[0]?.cvssData?.baseScore) cvss = item.metrics.cvssMetricV31[0].cvssData.baseScore;
+                const rawId = item.id || item.cve_id || 'CVE-UNKNOWN'; const id = escapeHTML(rawId); const summary = escapeHTML(item.summary || item.details || 'Описание отсутствует.'); const published = item.published ? new Date(item.published).toLocaleDateString('ru-RU') : '—';
+                let cvss = null; if (typeof item.cvss === 'number') cvss = item.cvss; else if (item.cvssScore) cvss = item.cvssScore; else if (item.cvssv3) cvss = item.cvssv3; else if (item.metrics?.cvssMetricV31?.[0]?.cvssData?.baseScore) cvss = item.metrics.cvssMetricV31[0].cvssData.baseScore;
                 let cls = 'cve-unknown', txt = 'Не оценен';
-                if (cvss >= 9.0) { cls = 'cve-critical'; txt = 'КРИТИЧЕСКИЙ'; }
-                else if (cvss >= 7.0) { cls = 'cve-high'; txt = 'Высокий'; }
-                else if (cvss >= 4.0) { cls = 'cve-medium'; txt = 'Средний'; }
-                else if (cvss !== null) { cls = 'cve-low'; txt = 'Низкий'; }
-                const isSafeId = /^CVE-\d{4}-\d{4,}$/.test(rawId);
-                const nvdLink = isSafeId ? `https://nvd.nist.gov/vuln/detail/${rawId}` : '#';
-                return `<div class="cve-card ${cls}">
-                    <div class="cve-header"><span class="cve-id">${id}</span><span class="cve-severity">${txt}${cvss ? ` (${cvss.toFixed(1)})` : ''}</span></div>
-                    <p class="cve-summary">${summary}</p>
-                    <div class="cve-footer"><span>📅 ${published}</span>${nvdLink !== '#' ? `<a href="${nvdLink}" target="_blank" rel="noopener noreferrer" class="cve-link">Подробнее →</a>` : ''}</div>
-                </div>`;
+                if (cvss >= 9.0) { cls = 'cve-critical'; txt = 'КРИТИЧЕСКИЙ'; } else if (cvss >= 7.0) { cls = 'cve-high'; txt = 'Высокий'; } else if (cvss >= 4.0) { cls = 'cve-medium'; txt = 'Средний'; } else if (cvss !== null) { cls = 'cve-low'; txt = 'Низкий'; }
+                const isSafeId = /^CVE-\d{4}-\d{4,}$/.test(rawId); const nvdLink = isSafeId ? `https://nvd.nist.gov/vuln/detail/${rawId}` : '#';
+                return `<div class="cve-card ${cls}"><div class="cve-header"><span class="cve-id">${id}</span><span class="cve-severity">${txt}${cvss ? ` (${cvss.toFixed(1)})` : ''}</span></div><p class="cve-summary">${summary}</p><div class="cve-footer"><span>📅 ${published}</span>${nvdLink !== '#' ? `<a href="${nvdLink}" target="_blank" rel="noopener noreferrer" class="cve-link">Подробнее →</a>` : ''}</div></div>`;
             }).join('');
         }
 
         async function loadLeaderboard() {
-            const tbody = document.getElementById('leaderboard-body');
-            tbody.innerHTML = '<tr><td colspan="3">Загрузка...</td></tr>';
+            const tbody = document.getElementById('leaderboard-body'); tbody.innerHTML = '<tr><td colspan="3">Загрузка...</td></tr>';
             const { data } = await supabaseClient.from('game_leaderboard').select('*').order('score', { ascending: false }).limit(10);
             if(!data || !data.length) return tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Пусто</td></tr>';
             tbody.innerHTML = data.map((r,i) => `<tr><td>${i+1}</td><td>${escapeHTML(r.player_name)}</td><td style="color:var(--primary-cyan)">${r.score}</td></tr>`).join('');
         }
 
         (function() {
-            const canvas = document.getElementById('gameCanvas'), ctx = canvas.getContext('2d');
-            const overlay = document.getElementById('game-overlay');
-            const startScreen = document.getElementById('game-start-screen');
-            const overScreen = document.getElementById('game-over-screen');
-            const startBtn = document.getElementById('startGameBtn');
-            const restartBtn = document.getElementById('restartGameBtn');
-            const saveBtn = document.getElementById('saveScoreBtn');
-            const finalScoreEl = document.getElementById('final-score');
-            
-            const W = canvas.width, H = canvas.height;
-            let state = 'idle', score = 0, lives = 3, fId = null, lastT = 0, player = { x: W/2, y: H-60, r: 60 }, viruses = [], keys = { l:0, r:0 };
+            const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
+            const overlay = document.getElementById('game-overlay'); const startScreen = document.getElementById('game-start-screen'); const overScreen = document.getElementById('game-over-screen');
+            const startBtn = document.getElementById('startGameBtn'); const restartBtn = document.getElementById('restartGameBtn'); const saveBtn = document.getElementById('saveScoreBtn'); const finalScoreEl = document.getElementById('final-score'); const scoreEl = document.getElementById('score'); const livesEl = document.getElementById('lives');
+            const W = canvas.width; const H = canvas.height;
+            let state = 'idle', score = 0, lives = 3, fId = null, lastT = 0, spawnTimer = 0, spawnInterval = 1000;
+            let player = { x: W/2, y: H/2, r: 15, speed: 0.15 }; let bullets = []; let enemies = []; let particles = []; let shakeTime = 0; let mouseX = W/2, mouseY = H/2;
 
+            canvas.addEventListener('mousemove', (e) => { const rect = canvas.getBoundingClientRect(); mouseX = (e.clientX - rect.left) * (W / rect.width); mouseY = (e.clientY - rect.top) * (H / rect.height); });
+            canvas.addEventListener('touchmove', (e) => { e.preventDefault(); const rect = canvas.getBoundingClientRect(); mouseX = (e.touches[0].clientX - rect.left) * (W / rect.width); mouseY = (e.touches[0].clientY - rect.top) * (H / rect.height); }, { passive: false });
+
+            function createParticles(x, y, color, count) { for(let i=0; i<count; i++) { particles.push({ x: x, y: y, vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.5) * 10, life: 1, color: color, size: Math.random() * 3 + 1 }); } }
+            function spawnEnemy() {
+                const side = Math.floor(Math.random() * 4); let x, y;
+                if (side === 0) { x = Math.random() * W; y = -30; } else if (side === 1) { x = W + 30; y = Math.random() * H; } else if (side === 2) { x = Math.random() * W; y = H + 30; } else { x = -30; y = Math.random() * H; }
+                const angle = Math.atan2(player.y - y, player.x - x); const speed = 1.5 + (score / 100);
+                enemies.push({ x: x, y: y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, r: 15 + Math.random() * 10, hp: 2, text: Math.random() > 0.5 ? '01' : '11', rot: 0, rotSpeed: (Math.random() - 0.5) * 0.1 });
+            }
             function loop(t) {
-                if(!lastT) lastT = t; let dt = Math.min(t-lastT, 50); lastT = t;
+                if(!lastT) lastT = t; let dt = Math.min(t - lastT, 50); lastT = t;
                 if(state === 'playing') {
-                    if(keys.l) player.x -= 8 * (dt/16); if(keys.r) player.x += 8 * (dt/16);
-                    player.x = Math.max(player.r, Math.min(W-player.r, player.x));
-                    if(Math.random() < 0.02) viruses.push({ x: Math.random()*(W-40)+20, y: -20, r: 15, sp: Math.random()*2+2 });
-                    for(let i=viruses.length-1; i>=0; i--) {
-                        let v = viruses[i]; v.y += v.sp * (dt/16);
-                        if(Math.hypot(v.x-player.x, v.y-player.y) < player.r + v.r) { viruses.splice(i,1); score++; document.getElementById('score').innerText = score; }
-                        else if(v.y > H) { viruses.splice(i,1); lives--; document.getElementById('lives').innerText = '🛡️'.repeat(lives) || '—'; if(lives<=0) end(); }
+                    player.x += (mouseX - player.x) * player.speed; player.y += (mouseY - player.y) * player.speed;
+                    if (enemies.length > 0) { let nearest = null; let minDist = Infinity; enemies.forEach(e => { const d = Math.hypot(e.x - player.x, e.y - player.y); if (d < minDist) { minDist = d; nearest = e; } }); if (nearest && Math.random() < 0.1) { const angle = Math.atan2(nearest.y - player.y, nearest.x - player.x); bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle) * 15, vy: Math.sin(angle) * 15, life: 1 }); playBeep(1500, 'square', 0.02); } }
+                    spawnTimer += dt; if (spawnTimer > spawnInterval) { spawnTimer = 0; spawnEnemy(); if (score > 50 && Math.random() > 0.5) spawnEnemy(); }
+                    for (let i = bullets.length - 1; i >= 0; i--) { let b = bullets[i]; b.x += b.vx; b.y += b.vy; b.life -= 0.02; if (b.life <= 0 || b.x < 0 || b.x > W || b.y < 0 || b.y > H) bullets.splice(i, 1); }
+                    for (let i = enemies.length - 1; i >= 0; i--) {
+                        let e = enemies[i]; e.x += e.vx; e.y += e.vy; e.rot += e.rotSpeed;
+                        if (Math.hypot(e.x - player.x, e.y - player.y) < e.r + player.r) { enemies.splice(i, 1); lives--; shakeTime = 20; playBeep(100, 'sawtooth', 0.3); createParticles(e.x, e.y, '#ff4757', 20); livesEl.innerText = '🛡️'.repeat(Math.max(0, lives)) || '—'; if (lives <= 0) endGame(); continue; }
+                        for (let j = bullets.length - 1; j >= 0; j--) { let b = bullets[j]; if (Math.hypot(e.x - b.x, e.y - b.y) < e.r + 5) { bullets.splice(j, 1); e.hp--; createParticles(b.x, b.y, '#00d2ff', 5); if (e.hp <= 0) { enemies.splice(i, 1); score += 10; scoreEl.innerText = score; createParticles(e.x, e.y, '#ff4757', 15); playBeep(800, 'sine', 0.1); } break; } }
                     }
+                    for (let i = particles.length - 1; i >= 0; i--) { let p = particles[i]; p.x += p.vx; p.y += p.vy; p.vx *= 0.95; p.vy *= 0.95; p.life -= 0.03; if (p.life <= 0) particles.splice(i, 1); }
+                    if (shakeTime > 0) shakeTime -= dt;
                 }
-                ctx.fillStyle = '#071021'; ctx.fillRect(0,0,W,H);
-                viruses.forEach(v => { ctx.beginPath(); ctx.arc(v.x,v.y,v.r,0,Math.PI*2); ctx.fillStyle = '#ff4757'; ctx.fill(); });
-                ctx.beginPath(); ctx.arc(player.x, player.y, player.r, Math.PI, 0); ctx.strokeStyle = '#00d2ff'; ctx.lineWidth = 8; ctx.stroke();
-                fId = requestAnimationFrame(loop);
+                draw(); fId = requestAnimationFrame(loop);
             }
-
-            function start() {
-                state = 'playing'; score = 0; lives = 3; viruses = []; player.x = W/2;
-                document.getElementById('score').innerText = 0; document.getElementById('lives').innerText = '🛡️🛡️🛡️';
-                overlay.classList.add('hidden'); lastT = 0;
-                if(fId) cancelAnimationFrame(fId); fId = requestAnimationFrame(loop);
+            function draw() {
+                ctx.fillStyle = 'rgba(4, 8, 16, 0.3)'; ctx.fillRect(0, 0, W, H);
+                ctx.save(); if (shakeTime > 0) { ctx.translate((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10); }
+                ctx.strokeStyle = 'rgba(0, 210, 255, 0.05)'; ctx.lineWidth = 1; for(let i=0; i<W; i+=50) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,H); ctx.stroke(); } for(let i=0; i<H; i+=50) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(W,i); ctx.stroke(); }
+                ctx.lineCap = 'round'; bullets.forEach(b => { ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(b.x - b.vx * 0.5, b.y - b.vy * 0.5); ctx.strokeStyle = '#00d2ff'; ctx.lineWidth = 3; ctx.shadowBlur = 10; ctx.shadowColor = '#00d2ff'; ctx.stroke(); });
+                enemies.forEach(e => { ctx.save(); ctx.translate(e.x, e.y); ctx.rotate(e.rot); ctx.shadowBlur = 15; ctx.shadowColor = '#ff4757'; ctx.strokeStyle = '#ff4757'; ctx.lineWidth = 3; ctx.strokeRect(-e.r, -e.r, e.r*2, e.r*2); ctx.fillStyle = 'rgba(255, 71, 87, 0.2)'; ctx.fillRect(-e.r, -e.r, e.r*2, e.r*2); ctx.fillStyle = '#fff'; ctx.font = '12px "JetBrains Mono", monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.shadowBlur = 0; ctx.fillText(e.text, 0, 0); ctx.restore(); });
+                particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fillStyle = p.color; ctx.globalAlpha = p.life; ctx.shadowBlur = 5; ctx.shadowColor = p.color; ctx.fill(); }); ctx.globalAlpha = 1;
+                if (state === 'playing' || state === 'idle') {
+                    ctx.save(); ctx.translate(player.x, player.y); let angle = 0; if(enemies.length > 0) { let nearest = enemies[0]; let minDist = Infinity; enemies.forEach(e => { const d = Math.hypot(e.x-player.x, e.y-player.y); if(d<minDist){minDist=d; nearest=e;} }); angle = Math.atan2(nearest.y - player.y, nearest.x - player.x); } ctx.rotate(angle);
+                    ctx.shadowBlur = 20; ctx.shadowColor = '#00d2ff'; ctx.fillStyle = '#00d2ff'; ctx.beginPath(); ctx.moveTo(15, 0); ctx.lineTo(-10, 10); ctx.lineTo(-5, 0); ctx.lineTo(-10, -10); ctx.closePath(); ctx.fill();
+                    ctx.fillStyle = '#fff'; ctx.shadowBlur = 0; ctx.beginPath(); ctx.arc(0, 0, 3, 0, Math.PI*2); ctx.fill(); ctx.restore();
+                }
+                ctx.restore();
             }
-
-            function end() {
-                state = 'gameover'; if(fId) cancelAnimationFrame(fId); fId = null;
-                finalScoreEl.innerText = score;
-                document.getElementById('pName').value = '';
-                startScreen.classList.add('hidden');
-                overScreen.classList.remove('hidden');
-                overlay.classList.remove('hidden');
-            }
-
-            startBtn.onclick = start;
-            restartBtn.onclick = () => {
-                overScreen.classList.add('hidden');
-                startScreen.classList.remove('hidden');
-                start();
-            };
-            saveBtn.onclick = async () => {
-                const name = document.getElementById('pName').value || 'Аноним';
-                await supabaseClient.from('game_leaderboard').insert([{ player_name: name, score }]);
-                showLeaderboard();
-            };
-
-            canvas.addEventListener('mousemove', e => { if(state==='playing') player.x = Math.max(player.r, Math.min(W-player.r, (e.clientX - canvas.getBoundingClientRect().left) * (W / canvas.getBoundingClientRect().width))); });
-            canvas.addEventListener('touchmove', e => { e.preventDefault(); if(state==='playing') player.x = Math.max(player.r, Math.min(W-player.r, (e.touches[0].clientX - canvas.getBoundingClientRect().left) * (W / canvas.getBoundingClientRect().width))); }, { passive: false });
-            window.addEventListener('keydown', e => { if(e.key==='ArrowLeft'||e.key==='a') keys.l=1; if(e.key==='ArrowRight'||e.key==='d') keys.r=1; });
-            window.addEventListener('keyup', e => { if(e.key==='ArrowLeft'||e.key==='a') keys.l=0; if(e.key==='ArrowRight'||e.key==='d') keys.r=0; });
-            
-            requestAnimationFrame(loop);
-            window.stopGameLoop = () => { if(fId) { cancelAnimationFrame(fId); fId = null; } };
-            window.redrawGame = () => { if(state==='idle') requestAnimationFrame(loop); };
+            function startGame() { if (state === 'playing') return; state = 'playing'; score = 0; lives = 3; enemies = []; bullets = []; particles = []; spawnTimer = 0; spawnInterval = 1000; player.x = W/2; player.y = H/2; mouseX = W/2; mouseY = H/2; scoreEl.innerText = '0'; livesEl.innerText = '🛡️🛡️🛡️'; startScreen.classList.add('hidden'); overScreen.classList.add('hidden'); overlay.classList.add('hidden'); lastT = 0; if(fId) cancelAnimationFrame(fId); fId = requestAnimationFrame(loop); }
+            function endGame() { state = 'gameover'; if(fId) cancelAnimationFrame(fId); fId = null; finalScoreEl.innerText = score; document.getElementById('pName').value = ''; overlay.classList.remove('hidden'); overScreen.classList.remove('hidden'); playBeep(50, 'sawtooth', 0.5); }
+            startBtn.onclick = startGame; restartBtn.onclick = startGame;
+            saveBtn.onclick = async () => { const name = document.getElementById('pName').value || 'Аноним'; await supabaseClient.from('game_leaderboard').insert([{ player_name: name, score }]); showLeaderboard(); };
+            window.stopGameLoop = () => { if(fId) { cancelAnimationFrame(fId); fId = null; } }; window.redrawGame = () => { if(state === 'idle') { lastT = 0; fId = requestAnimationFrame(loop); } }; draw();
         })();
 
         setInterval(() => { const el = document.getElementById('blocked-count'); if(el) el.innerText = (parseInt(el.innerText.replace(/,/g,'')) + Math.floor(Math.random()*5)).toLocaleString(); }, 3000);
