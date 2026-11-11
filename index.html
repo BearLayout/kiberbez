@@ -389,7 +389,8 @@
                 <p class="hero-subtitle">Проверьте свои данные на утечки, узнайте о новых CVE и попробуйте взломать систему.</p>
                 <div class="hero-buttons">
                     <button class="btn btn-primary" onclick="showLeak()">Проверить утечки</button>
-                    <button class="btn btn-outline" onclick="showTerminal()">Взломать систему</button>
+                    <!-- Кнопка OSINT вместо Взломать систему -->
+                    <button class="btn btn-outline" onclick="showOsint()">OSINT-анализ</button>
                     <a href="https://max.ru/join/HsJwwGgWoqjNWpDPAcaWhCScV-l5YodFQ1TDAE_u_6Y" target="_blank" class="btn btn-max">MAX</a>
                 </div>
             </div>
@@ -646,22 +647,25 @@
     </div>
 
     <!-- Кнопка и окно ИИ-помощника -->
-    <button id="ai-chat-btn" class="btn btn-primary" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; border-radius: 50%; width: 60px; height: 60px; padding: 0; overflow: hidden; box-shadow: 0 0 20px rgba(0,210,255,0.5); border: 2px solid var(--primary-cyan); background: var(--bg-dark);">
-        <img src="bear-icon.png" alt="AI Bear" style="width: 100%; height: 100%; object-fit: cover; object-position: center 30%;" onerror="this.src='logo.png'; this.style.objectFit='cover'; this.style.objectPosition='center 30%';">
+    <button id="ai-chat-btn" class="btn btn-primary" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; border-radius: 50%; width: 65px; height: 65px; padding: 0; overflow: hidden; box-shadow: 0 0 25px rgba(0,210,255,0.6); border: 2px solid var(--primary-cyan); background: var(--bg-dark);">
+        <img src="bear-icon.png" alt="AI Bear" style="width: 100%; height: 100%; object-fit: cover; object-position: center 40%; transform: scale(1.6);" onerror="this.src='logo.png'; this.style.objectFit='cover'; this.style.objectPosition='center 30%';">
     </button>
 
-    <div id="ai-chat-window" class="hidden" style="position: fixed; bottom: 90px; right: 20px; width: 350px; max-width: calc(100vw - 40px); background: rgba(7,16,33,0.95); backdrop-filter: blur(12px); border: 1px solid var(--primary-cyan); border-radius: 12px; z-index: 1001; display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,210,255,0.2);">
-      <div style="padding: 12px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); border-radius: 12px 12px 0 0;">
-        <span style="font-weight: bold; color: var(--primary-cyan); display: flex; align-items: center; gap: 8px;">
-            <img src="bear-icon.png" alt="Bear" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; object-position: center 30%;" onerror="this.src='logo.png'; this.style.objectFit='cover'; this.style.objectPosition='center 30%';">
+    <div id="ai-chat-window" class="hidden" style="position: fixed; bottom: 95px; right: 20px; width: 350px; max-width: calc(100vw - 40px); background: rgba(7,16,33,0.95); backdrop-filter: blur(12px); border: 1px solid var(--primary-cyan); border-radius: 12px; z-index: 1001; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(0,210,255,0.2);">
+      
+      <div style="padding: 12px 15px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); border-radius: 12px 12px 0 0;">
+        <span style="font-weight: bold; color: var(--primary-cyan); display: flex; align-items: center; gap: 10px;">
+            <img src="bear-icon.png" alt="Bear" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; object-position: center 30%; border: 1px solid var(--primary-cyan); transform: scale(1.2);" onerror="this.src='logo.png'; this.style.objectFit='cover'; this.style.objectPosition='center 30%';">
             Кибер-Помощник
         </span>
-        <span id="close-chat" style="cursor: pointer; font-size: 18px; color: var(--text-muted);">✕</span>
+        <span id="close-chat" style="cursor: pointer; font-size: 20px; color: var(--text-muted); transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'">✕</span>
       </div>
-      <div id="ai-chat-messages" style="height: 300px; overflow-y: auto; padding: 12px; font-size: 14px; display: flex; flex-direction: column; gap: 10px;"></div>
-      <div style="padding: 10px; border-top: 1px solid var(--glass-border); display: flex; gap: 5px;">
-        <input type="text" id="ai-chat-input" placeholder="Задайте вопрос..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; outline: none;">
-        <button id="ai-chat-send" class="btn btn-primary" style="padding: 10px 15px;">➤</button>
+
+      <div id="ai-chat-messages" style="height: 300px; overflow-y: auto; padding: 15px; font-size: 14px; display: flex; flex-direction: column; gap: 10px;"></div>
+
+      <div style="padding: 12px; border-top: 1px solid var(--glass-border); display: flex; gap: 8px; background: rgba(0,0,0,0.2); border-radius: 0 0 12px 12px;">
+        <input type="text" id="ai-chat-input" placeholder="Задайте вопрос..." style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; outline: none; font-size: 14px;">
+        <button id="ai-chat-send" class="btn btn-primary" style="padding: 0 15px; display: flex; align-items: center; justify-content: center;">➤</button>
       </div>
     </div>
 
@@ -691,7 +695,7 @@
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let loadedArticles = [];
 
-        const ADMIN_EMAIL = 'kasper@kiberbez.ru'; // <--- ЗАМЕНИТЕ НА ВАШ EMAIL
+        const ADMIN_EMAIL = 'admin@kiberbez.ru'; // <--- ЗАМЕНИТЕ НА ВАШ EMAIL
 
         function escapeHTML(str) {
             if (!str) return '';
@@ -746,7 +750,7 @@
             } catch (err) { showToast('Ошибка отправки.', 'error'); } finally { btn.innerText = 'Отправить заявку'; btn.disabled = false; }
         });
 
-        // ИИ ЧАТ (GigaChat 3 Ultra)
+        // ИИ ЧАТ
         const chatBtn = document.getElementById('ai-chat-btn');
         const chatWindow = document.getElementById('ai-chat-window');
         const closeChat = document.getElementById('close-chat');
@@ -756,6 +760,15 @@
 
         let history = [];
         let isWaiting = false;
+
+        // Приветственное сообщение
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (chatMessages.children.length === 0) {
+                    addMessage('assistant', 'Привет! Я Кибер-Помощник. Задай мне любой вопрос о безопасности, фишинге или уязвимостях.');
+                }
+            }, 1000);
+        });
 
         chatBtn.onclick = () => {
             chatWindow.classList.toggle('hidden');
@@ -781,7 +794,6 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
             try {
-                // ВАЖНО: Сюда вставьте URL вашего Cloudflare Worker (из инструкции GigaChat)
                 const res = await fetch('https://ВАШ_WORKER.workers.dev', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
