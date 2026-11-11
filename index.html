@@ -263,7 +263,6 @@
         @media (max-width: 900px) {
             .burger { display: flex; }
             
-            /* Меню в 2 колонки */
             .nav-links { 
                 position: fixed; top: 60px; left: -100%; width: 100%; height: calc(100vh - 60px); 
                 background: rgba(7, 16, 33, 0.98); 
@@ -287,7 +286,6 @@
             }
             .header-max-btn { display: none; }
             
-            /* Главный экран */
             .hero {
                 min-height: auto !important; 
                 flex-direction: column !important;
@@ -303,19 +301,12 @@
             .hero-visual { margin-top: 0 !important; display: flex !important; justify-content: center !important; }
             .hero-image { max-width: 180px !important; height: auto !important; }
 
-            /* Фикс кнопки OSINT */
             .osint-input-group {
                 flex-direction: column !important; 
                 gap: 15px !important;
             }
-            .osint-input-group input {
-                width: 100% !important;
-            }
-            .osint-input-group button {
-                width: 100% !important; 
-                padding: 15px !important;
-                font-size: 16px !important;
-            }
+            .osint-input-group input { width: 100% !important; }
+            .osint-input-group button { width: 100% !important; padding: 15px !important; font-size: 16px !important; }
         }
 
         @media (max-width: 600px) {
@@ -655,10 +646,16 @@
     </div>
 
     <!-- Кнопка и окно ИИ-помощника -->
-    <button id="ai-chat-btn" class="btn btn-primary" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; box-shadow: 0 0 20px rgba(0,210,255,0.5);">🤖</button>
+    <button id="ai-chat-btn" class="btn btn-primary" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; border-radius: 50%; width: 60px; height: 60px; padding: 0; overflow: hidden; box-shadow: 0 0 20px rgba(0,210,255,0.5); border: 2px solid var(--primary-cyan); background: var(--bg-dark);">
+        <img src="bear-icon.png" alt="AI Bear" style="width: 100%; height: 100%; object-fit: cover; object-position: center 30%;" onerror="this.src='logo.png'; this.style.objectFit='cover'; this.style.objectPosition='center 30%';">
+    </button>
+
     <div id="ai-chat-window" class="hidden" style="position: fixed; bottom: 90px; right: 20px; width: 350px; max-width: calc(100vw - 40px); background: rgba(7,16,33,0.95); backdrop-filter: blur(12px); border: 1px solid var(--primary-cyan); border-radius: 12px; z-index: 1001; display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,210,255,0.2);">
       <div style="padding: 12px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); border-radius: 12px 12px 0 0;">
-        <span style="font-weight: bold; color: var(--primary-cyan);">🤖 Кибер-Помощник</span>
+        <span style="font-weight: bold; color: var(--primary-cyan); display: flex; align-items: center; gap: 8px;">
+            <img src="bear-icon.png" alt="Bear" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; object-position: center 30%;" onerror="this.src='logo.png'; this.style.objectFit='cover'; this.style.objectPosition='center 30%';">
+            Кибер-Помощник
+        </span>
         <span id="close-chat" style="cursor: pointer; font-size: 18px; color: var(--text-muted);">✕</span>
       </div>
       <div id="ai-chat-messages" style="height: 300px; overflow-y: auto; padding: 12px; font-size: 14px; display: flex; flex-direction: column; gap: 10px;"></div>
@@ -694,7 +691,7 @@
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let loadedArticles = [];
 
-        const ADMIN_EMAIL = 'admin@kiberbez.ru'; // <--- ЗАМЕНИТЕ НА ВАШ EMAIL
+        const ADMIN_EMAIL = 'kasper@kiberbez.ru'; // <--- ЗАМЕНИТЕ НА ВАШ EMAIL
 
         function escapeHTML(str) {
             if (!str) return '';
@@ -749,7 +746,7 @@
             } catch (err) { showToast('Ошибка отправки.', 'error'); } finally { btn.innerText = 'Отправить заявку'; btn.disabled = false; }
         });
 
-        // ИИ ЧАТ
+        // ИИ ЧАТ (GigaChat 3 Ultra)
         const chatBtn = document.getElementById('ai-chat-btn');
         const chatWindow = document.getElementById('ai-chat-window');
         const closeChat = document.getElementById('close-chat');
@@ -784,6 +781,7 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
             try {
+                // ВАЖНО: Сюда вставьте URL вашего Cloudflare Worker (из инструкции GigaChat)
                 const res = await fetch('https://ВАШ_WORKER.workers.dev', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -792,7 +790,6 @@
                 const data = await res.json();
                 let reply = '';
                 if (data.choices && data.choices[0].message) reply = data.choices[0].message.content;
-                else if (data.result && data.result.alternatives) reply = data.result.alternatives[0].message.text;
                 else reply = 'Не удалось получить ответ.';
 
                 addMessage('assistant', reply);
