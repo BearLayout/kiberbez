@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kiberbez-v4';
+const CACHE_NAME = 'kiberbez-v5';
 const ASSETS = [
   './',
   './index.html',
