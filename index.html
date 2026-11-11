@@ -12,7 +12,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Kiberbez">
     <link rel="apple-touch-icon" href="logo.png">
-    <!-- КОНЕЦ PWA НАСТРОЕК -->
 
     <meta name="description" content="Kiberbez - проверьте утечки данных, пройдите тест на фишинг, узнайте о новых CVE, сыграйте в игру и повысьте свой уровень кибербезопасности.">
     <link rel="icon" href="logo.png" type="image/png">
@@ -27,7 +26,6 @@
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
@@ -222,38 +220,6 @@
         .form-group { margin-bottom: 12px; }
         textarea.form-control { min-height: 120px; }
 
-        @media (max-width: 900px) {
-            .burger { display: flex; }
-            .nav-links { position: fixed; top: 60px; left: -100%; width: 100%; height: calc(100vh - 60px); background: rgba(7, 16, 33, 0.98); flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 30px; gap: 20px; transition: 0.3s; z-index: 999; border-top: 1px solid var(--glass-border); overflow-y: auto; }
-            .nav-links.active { left: 0; }
-            .nav-links a { font-size: 18px; }
-            .header-max-btn { display: none; }
-            
-            .hero { flex-direction: column; text-align: center; padding: 90px 0 30px; }
-            .hero-buttons { justify-content: center; }
-            .hero-image { max-width: 200px; margin-top: 20px; }
-        }
-
-        @media (max-width: 600px) {
-            .status-bar { font-size: 9px; gap: 10px; justify-content: space-around; }
-            .status-item:nth-child(2), .status-item:nth-child(3) { display: none; }
-            .logo-banner { font-size: 16px; padding: 6px 15px; }
-            .map-container { height: 300px; }
-        }
-
-        @media (min-width: 901px) {
-            .blog-controls { flex-direction: row; justify-content: space-between; align-items: center; }
-            .search-box { max-width: 400px; }
-            .blog-audit-btn { width: auto !important; }
-            .blog-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-            .article-img-box { height: 200px; }
-            .article-title { font-size: 20px; }
-            .article-excerpt { font-size: 15px; }
-            .article-full { max-width: 800px; padding: 40px; margin-top: 120px; }
-            .article-full h1 { font-size: 36px; }
-            .article-full .content { font-size: 18px; }
-        }
-        
         .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); }
         .auth-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: var(--text-muted); transition: 0.3s; }
         .auth-tab.active { color: var(--primary-cyan); border-bottom: 2px solid var(--primary-cyan); }
@@ -292,6 +258,85 @@
         .osint-item span.danger { color: var(--danger); }
         
         .osint-scan-line { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--success); line-height: 1.8; margin-bottom: 10px; }
+
+        /* === ФИКС МОБИЛЬНОЙ ВЕРСТКИ ГЛАВНОЙ И МЕНЮ === */
+        @media (max-width: 900px) {
+            .burger { display: flex; }
+            
+            /* Меню в 2 колонки */
+            .nav-links { 
+                position: fixed; top: 60px; left: -100%; width: 100%; height: calc(100vh - 60px); 
+                background: rgba(7, 16, 33, 0.98); 
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px !important;
+                padding: 20px !important;
+                align-content: start !important;
+                transition: 0.3s; z-index: 999; border-top: 1px solid var(--glass-border); overflow-y: auto;
+            }
+            .nav-links.active { left: 0; }
+            .nav-links a { 
+                font-size: 14px !important; padding: 15px 10px !important; 
+                background: rgba(255, 255, 255, 0.03) !important; 
+                border: 1px solid rgba(255, 255, 255, 0.1) !important; 
+                border-radius: 8px !important; 
+                text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important; 
+            }
+            .nav-links a.active { 
+                background: rgba(0, 210, 255, 0.15) !important; border-color: var(--primary-cyan) !important; color: var(--primary-cyan) !important; 
+            }
+            .header-max-btn { display: none; }
+            
+            /* Главный экран */
+            .hero {
+                min-height: auto !important; 
+                flex-direction: column !important;
+                text-align: center !important;
+                padding: 90px 15px 30px !important; 
+                gap: 20px !important;
+            }
+            .hero-content, .hero-visual { transform: none !important; width: 100% !important; }
+            .hero-title { white-space: normal !important; font-size: 28px !important; line-height: 1.3 !important; margin-bottom: 15px !important; }
+            .hero-subtitle { font-size: 14px !important; margin: 0 auto 20px !important; }
+            .hero-buttons { flex-direction: column !important; width: 100% !important; gap: 10px !important; }
+            .hero-buttons .btn { width: 100% !important; margin: 0 !important; }
+            .hero-visual { margin-top: 0 !important; display: flex !important; justify-content: center !important; }
+            .hero-image { max-width: 180px !important; height: auto !important; }
+
+            /* Фикс кнопки OSINT */
+            .osint-input-group {
+                flex-direction: column !important; 
+                gap: 15px !important;
+            }
+            .osint-input-group input {
+                width: 100% !important;
+            }
+            .osint-input-group button {
+                width: 100% !important; 
+                padding: 15px !important;
+                font-size: 16px !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .status-bar { font-size: 9px; gap: 10px; justify-content: space-around; }
+            .status-item:nth-child(2), .status-item:nth-child(3) { display: none; }
+            .logo-banner { font-size: 16px; padding: 6px 15px; }
+            .map-container { height: 300px; }
+        }
+
+        @media (min-width: 901px) {
+            .blog-controls { flex-direction: row; justify-content: space-between; align-items: center; }
+            .search-box { max-width: 400px; }
+            .blog-audit-btn { width: auto !important; }
+            .blog-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+            .article-img-box { height: 200px; }
+            .article-title { font-size: 20px; }
+            .article-excerpt { font-size: 15px; }
+            .article-full { max-width: 800px; padding: 40px; margin-top: 120px; }
+            .article-full h1 { font-size: 36px; }
+            .article-full .content { font-size: 18px; }
+        }
     </style>
 </head>
 <body>
@@ -326,18 +371,18 @@
             <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
             <nav class="nav-links" id="navLinks">
                 <a onclick="showMain(); toggleMenu()" id="nav-main" class="active">Главная</a>
-                <a onclick="showNews(); toggleMenu()" id="nav-news">📰 Новости</a>
-                <a onclick="showOsint(); toggleMenu()" id="nav-osint">🕵️ OSINT</a>
-                <a onclick="showTerminal(); toggleMenu()" id="nav-term">💻 Терминал</a>
+                <a onclick="showNews(); toggleMenu()" id="nav-news">Новости</a>
+                <a onclick="showOsint(); toggleMenu()" id="nav-osint">OSINT</a>
+                <a onclick="showTerminal(); toggleMenu()" id="nav-term">Терминал</a>
                 <a onclick="showBlog(); toggleMenu()" id="nav-blog">Блог</a>
-                <a onclick="showCveFeed(); toggleMenu()" id="nav-cve">🚨 CVE</a>
-                <a onclick="showLeak(); toggleMenu()" id="nav-leak">🕵️ Утечки</a>
-                <a onclick="showPhishing(); toggleMenu()" id="nav-phish">🎣 Фишинг</a>
-                <a onclick="showQuiz(); toggleMenu()" id="nav-quiz">📝 Тест</a>
-                <a onclick="showMap(); toggleMenu()" id="nav-map">🌍 Карта</a>
-                <a onclick="showGame(); toggleMenu()" id="nav-game">🎮 Игра</a>
-                <a onclick="showLeaderboard(); toggleMenu()" id="nav-leaderboard">🏆 Рекорды</a>
-                <a onclick="showProfile(); toggleMenu()" id="nav-profile">👤 Вход</a>
+                <a onclick="showCveFeed(); toggleMenu()" id="nav-cve">CVE</a>
+                <a onclick="showLeak(); toggleMenu()" id="nav-leak">Утечки</a>
+                <a onclick="showPhishing(); toggleMenu()" id="nav-phish">Фишинг</a>
+                <a onclick="showQuiz(); toggleMenu()" id="nav-quiz">Тест</a>
+                <a onclick="showMap(); toggleMenu()" id="nav-map">Карта</a>
+                <a onclick="showGame(); toggleMenu()" id="nav-game">Игра</a>
+                <a onclick="showLeaderboard(); toggleMenu()" id="nav-leaderboard">Рекорды</a>
+                <a onclick="showProfile(); toggleMenu()" id="nav-profile">Вход</a>
             </nav>
             <a href="https://max.ru/join/HsJwwGgWoqjNWpDPAcaWhCScV-l5YodFQ1TDAE_u_6Y" target="_blank" class="btn btn-max header-max-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="margin-right: 6px;"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"/><path d="M12 6L7 14H17L12 6Z" fill="currentColor"/></svg>
@@ -609,6 +654,20 @@
         </div>
     </div>
 
+    <!-- Кнопка и окно ИИ-помощника -->
+    <button id="ai-chat-btn" class="btn btn-primary" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; box-shadow: 0 0 20px rgba(0,210,255,0.5);">🤖</button>
+    <div id="ai-chat-window" class="hidden" style="position: fixed; bottom: 90px; right: 20px; width: 350px; max-width: calc(100vw - 40px); background: rgba(7,16,33,0.95); backdrop-filter: blur(12px); border: 1px solid var(--primary-cyan); border-radius: 12px; z-index: 1001; display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,210,255,0.2);">
+      <div style="padding: 12px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); border-radius: 12px 12px 0 0;">
+        <span style="font-weight: bold; color: var(--primary-cyan);">🤖 Кибер-Помощник</span>
+        <span id="close-chat" style="cursor: pointer; font-size: 18px; color: var(--text-muted);">✕</span>
+      </div>
+      <div id="ai-chat-messages" style="height: 300px; overflow-y: auto; padding: 12px; font-size: 14px; display: flex; flex-direction: column; gap: 10px;"></div>
+      <div style="padding: 10px; border-top: 1px solid var(--glass-border); display: flex; gap: 5px;">
+        <input type="text" id="ai-chat-input" placeholder="Задайте вопрос..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; outline: none;">
+        <button id="ai-chat-send" class="btn btn-primary" style="padding: 10px 15px;">➤</button>
+      </div>
+    </div>
+
     <footer>
         <div class="container">
             <p>© 2026 Kiberbez. Все права защищены.</p>
@@ -625,9 +684,7 @@
         // === РЕГИСТРАЦИЯ SERVICE WORKER (PWA) ===
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('PWA Service Worker зарегистрирован!', reg))
-                    .catch(err => console.log('Ошибка PWA:', err));
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('PWA:', err));
             });
         }
 
@@ -692,6 +749,90 @@
             } catch (err) { showToast('Ошибка отправки.', 'error'); } finally { btn.innerText = 'Отправить заявку'; btn.disabled = false; }
         });
 
+        // ИИ ЧАТ
+        const chatBtn = document.getElementById('ai-chat-btn');
+        const chatWindow = document.getElementById('ai-chat-window');
+        const closeChat = document.getElementById('close-chat');
+        const chatMessages = document.getElementById('ai-chat-messages');
+        const chatInput = document.getElementById('ai-chat-input');
+        const sendBtn = document.getElementById('ai-chat-send');
+
+        let history = [];
+        let isWaiting = false;
+
+        chatBtn.onclick = () => {
+            chatWindow.classList.toggle('hidden');
+            if (!chatWindow.classList.contains('hidden')) chatInput.focus();
+        };
+        closeChat.onclick = () => chatWindow.classList.add('hidden');
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text || isWaiting) return;
+
+            chatInput.value = '';
+            addMessage('user', text);
+            history.push({ role: 'user', content: text });
+            isWaiting = true;
+
+            const loadingDiv = document.createElement('div');
+            loadingDiv.innerText = 'Бот печатает...';
+            loadingDiv.style.color = 'var(--text-muted)';
+            loadingDiv.style.fontStyle = 'italic';
+            loadingDiv.id = 'ai-loading';
+            chatMessages.appendChild(loadingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const res = await fetch('https://ВАШ_WORKER.workers.dev', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: history })
+                });
+                const data = await res.json();
+                let reply = '';
+                if (data.choices && data.choices[0].message) reply = data.choices[0].message.content;
+                else if (data.result && data.result.alternatives) reply = data.result.alternatives[0].message.text;
+                else reply = 'Не удалось получить ответ.';
+
+                addMessage('assistant', reply);
+                history.push({ role: 'assistant', content: reply });
+            } catch (e) {
+                addMessage('assistant', 'Ошибка соединения.');
+            } finally {
+                isWaiting = false;
+                const loader = document.getElementById('ai-loading');
+                if (loader) loader.remove();
+            }
+        }
+
+        function addMessage(role, text) {
+            const div = document.createElement('div');
+            div.style.padding = '8px 12px';
+            div.style.borderRadius = '8px';
+            div.style.maxWidth = '85%';
+            div.style.wordBreak = 'break-word';
+            if (role === 'user') {
+                div.style.background = 'rgba(0, 210, 255, 0.15)';
+                div.style.color = 'var(--primary-cyan)';
+                div.style.alignSelf = 'flex-end';
+                div.innerText = text;
+            } else {
+                div.style.background = 'rgba(255,255,255,0.05)';
+                div.style.color = 'var(--text-main)';
+                div.style.alignSelf = 'flex-start';
+                div.innerText = text;
+            }
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        sendBtn.onclick = sendMessage;
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // НАВИГАЦИЯ
         const pages = ['main', 'news', 'osint', 'blog', 'map', 'quiz', 'game', 'leaderboard', 'profile', 'leak', 'phishing', 'article', 'terminal', 'cve'];
         function hideAll() {
             pages.forEach(p => document.getElementById(`${p}-page`)?.classList.add('hidden'));
@@ -880,7 +1021,7 @@
 
             if (user) {
                 authSection.classList.add('hidden');
-                navProfile.innerText = '👤 Профиль';
+                navProfile.innerText = 'Профиль';
                 if (user.email === ADMIN_EMAIL) {
                     userDashboard.classList.add('hidden'); adminDashboard.classList.remove('hidden'); loadAdminArticles();
                 } else {
@@ -888,7 +1029,7 @@
                     document.getElementById('user-email-display').innerText = user.email;
                 }
             } else {
-                authSection.classList.remove('hidden'); userDashboard.classList.add('hidden'); adminDashboard.classList.add('hidden'); navProfile.innerText = '👤 Вход';
+                authSection.classList.remove('hidden'); userDashboard.classList.add('hidden'); adminDashboard.classList.add('hidden'); navProfile.innerText = 'Вход';
             }
         }
 
