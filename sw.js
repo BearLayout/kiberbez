@@ -1,10 +1,10 @@
 /* KIBERBEZ — service worker: офлайн-кеш статики */
-const CACHE_NAME = 'kiberbez-v1';
+const CACHE_NAME = 'kiberbez-v1.1';
 const ASSETS = [
   './', './index.html', './manifest.json',
   './css/styles.css',
   './js/config.js', './js/app.js', './js/game.js',
-  './logo.png', './bear-icon.png'
+  './logo.png',
 ];
 
 self.addEventListener('install', (e) => {
